@@ -318,7 +318,7 @@ function App() {
       {/* =========== NAV =========== */}
       <nav className={scrolled ? 'header-scrolled' : ''} style={{ position: 'fixed', top: 0, left: 0, right: 0, padding: scrolled ? '1rem 4rem' : '1.5rem 4rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 100, transition: 'all 0.4s ease' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }} onClick={() => window.scrollTo(0,0)}>
-          <img src="/logo.png" alt="Logo" style={{ height: '70px', objectFit: 'contain' }} onError={(e) => { e.target.style.display='none'; }} />
+          <img src={asset('/logo.png')} alt="Logo" style={{ height: '70px', objectFit: 'contain' }} onError={(e) => { e.target.style.display='none'; }} />
         </div>
         <div style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
           <div style={{ display: 'flex', gap: '0.5rem' }}>
@@ -367,12 +367,12 @@ function App() {
           <div style={{ position: 'relative', height: '600px' }}>
             <Reveal delay={0.4} direction="left" style={{ position: 'absolute', top: 0, right: 0, width: '65%', height: '80%', zIndex: 2 }}>
               <div className="shape-float" style={{ width: '100%', height: '100%', borderRadius: 'var(--radius-arch)', overflow: 'hidden', border: '10px solid var(--bg-main)', boxShadow: 'var(--shadow-soft)' }}>
-                <img src="/taiwan.jpg" alt="Taiwan" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={e => e.target.src='/harvard.jpg'} />
+                <img src={asset('/taiwan.jpg')} alt="Taiwan" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={e => e.target.src=asset('/harvard.jpg')} />
               </div>
             </Reveal>
             <Reveal delay={0.6} direction="up" style={{ position: 'absolute', bottom: 0, left: 0, width: '55%', height: '60%', zIndex: 3 }}>
               <div className="shape-float-delay" style={{ width: '100%', height: '100%', borderRadius: 'var(--radius-arch)', overflow: 'hidden', border: '10px solid var(--bg-main)', boxShadow: 'var(--shadow-soft)' }}>
-                <img src="/italy.jpg" alt="Italy" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={e => e.target.src='/oxford.jpg'} />
+                <img src={asset('/italy.jpg')} alt="Italy" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={e => e.target.src=asset('/oxford.jpg')} />
               </div>
             </Reveal>
             
@@ -439,7 +439,7 @@ function App() {
                     {country.image.startsWith('bg') ? (
                       <div className={country.image} />
                     ) : (
-                      <img src={country.image} alt={country.name} />
+                      <img src={asset(country.image)} alt={country.name} />
                     )}
                   </div>
                   <div className="arch-content">
@@ -468,7 +468,7 @@ function App() {
               <Reveal key={exam.title} delay={i * 0.15}>
                 <div style={{ background: 'var(--bg-card)', borderRadius: 'var(--radius-xl)', padding: '3rem', boxShadow: 'var(--shadow-soft)', position: 'relative', overflow: 'hidden' }}>
                   <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'var(--bg-alt)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '2rem' }}>
-                    <img src={exam.img} alt={exam.title} style={{ width: '50%' }} onError={e => e.target.style.display='none'} />
+                    <img src={asset(exam.img)} alt={exam.title} style={{ width: '50%' }} onError={e => e.target.style.display='none'} />
                   </div>
                   <h3 style={{ fontSize: '2.2rem', fontWeight: 900, marginBottom: '1rem' }}>{exam.title}</h3>
                   <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem', lineHeight: 1.6, marginBottom: '2rem' }}>{exam.desc}</p>
@@ -498,7 +498,7 @@ function App() {
           <div className="display-grid" style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr', gap: '4rem', marginBottom: '4rem' }}>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '2rem' }}>
-                <img src="/logo.png" alt="Logo" style={{ height: '100px', objectFit: 'contain', filter: 'brightness(0) invert(1)' }} onError={e => e.target.style.display='none'} />
+                <img src={asset('/logo.png')} alt="Logo" style={{ height: '100px', objectFit: 'contain', filter: 'brightness(0) invert(1)' }} onError={e => e.target.style.display='none'} />
               </div>
               <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '1.05rem', lineHeight: 1.7, maxWidth: '400px', marginBottom: '2rem' }}>{t.footer.desc}</p>
               
