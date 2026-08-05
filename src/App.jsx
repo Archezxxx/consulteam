@@ -1,6 +1,13 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence, useInView } from 'framer-motion';
 import { locales } from './locales';
+
+// Resolve a public asset path against Vite's base URL (works both in dev and on GitHub Pages).
+const asset = (p) => {
+  if (!p) return p;
+  const base = import.meta.env.BASE_URL || '/';
+  return `${base.replace(/\/$/, '')}/${String(p).replace(/^\//, '')}`;
+};
 
 // ================= ANIMATIONS =================
 function Reveal({ children, delay = 0, style = {}, direction = 'up' }) {
@@ -31,8 +38,168 @@ function LangSwitcher({ lang, setLang }) {
   );
 }
 
+// ================= PRESENTATION VIEWER =================
+function PresentationViewer({ presentation, countryName, onClose }) {
+  const [currentSlide, setCurrentSlide] = useState(1);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isZoomed, setIsZoomed] = useState(false);
+  const totalSlides = presentation.slides;
+  const containerRef = useRef(null);
+
+  const goNext = useCallback(() => {
+    if (currentSlide < totalSlides) {
+      setCurrentSlide(s => s + 1);
+      setIsLoading(true);
+    }
+  }, [currentSlide, totalSlides]);
+
+  const goPrev = useCallback(() => {
+    if (currentSlide > 1) {
+      setCurrentSlide(s => s - 1);
+      setIsLoading(true);
+    }
+  }, [currentSlide]);
+
+  useEffect(() => {
+    const handleKey = (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); goNext(); }
+      if (e.key === 'ArrowLeft') { e.preventDefault(); goPrev(); }
+      if (e.key === 'Escape') { onClose(); }
+    };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [goNext, goPrev, onClose]);
+
+  // Preload next slide
+  useEffect(() => {
+    if (currentSlide < totalSlides) {
+      const img = new Image();
+      img.src = asset(`${presentation.folder}/${currentSlide + 1}.jpg`);
+    }
+  }, [currentSlide, totalSlides, presentation.folder]);
+
+  const slideUrl = asset(`${presentation.folder}/${currentSlide}.jpg`);
+  const progress = (currentSlide / totalSlides) * 100;
+
+  return (
+    <div className="presentation-overlay" onClick={onClose}>
+      <div className="presentation-viewer" onClick={e => e.stopPropagation()} ref={containerRef}>
+        {/* Header */}
+        <div className="presentation-header">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <button onClick={onClose} className="pres-close-btn" title="Close">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/>
+              </svg>
+            </button>
+            <div>
+              <h3 className="pres-title">{countryName}</h3>
+              <p className="pres-subtitle">Slide {currentSlide} / {totalSlides}</p>
+            </div>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <button
+              onClick={() => setIsZoomed(!isZoomed)}
+              className="pres-action-btn"
+              title={isZoomed ? 'Fit to screen' : 'Zoom in'}
+            >
+              {isZoomed ? (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="14" y1="10" x2="21" y2="3"/><line x1="3" y1="21" x2="10" y2="14"/>
+                </svg>
+              ) : (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>
+                </svg>
+              )}
+            </button>
+            <button onClick={onClose} className="pres-action-btn" title="Close">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        {/* Progress Bar */}
+        <div className="pres-progress-track">
+          <div className="pres-progress-bar" style={{ width: `${progress}%` }} />
+        </div>
+
+        {/* Slide Area */}
+        <div className={`pres-slide-area ${isZoomed ? 'pres-zoomed' : ''}`}>
+          {/* Prev Button */}
+          <button
+            onClick={goPrev}
+            disabled={currentSlide === 1}
+            className="pres-nav-btn pres-nav-prev"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="15 18 9 12 15 6"/>
+            </svg>
+          </button>
+
+          {/* Slide Image */}
+          <div className="pres-slide-container">
+            {isLoading && (
+              <div className="pres-loader">
+                <div className="pres-spinner" />
+              </div>
+            )}
+            <AnimatePresence mode="wait">
+              <motion.img
+                key={currentSlide}
+                src={slideUrl}
+                alt={`Slide ${currentSlide}`}
+                className="pres-slide-img"
+                initial={{ opacity: 0, scale: 0.97 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.97 }}
+                transition={{ duration: 0.3, ease: 'easeOut' }}
+                onLoad={() => setIsLoading(false)}
+                draggable={false}
+              />
+            </AnimatePresence>
+          </div>
+
+          {/* Next Button */}
+          <button
+            onClick={goNext}
+            disabled={currentSlide === totalSlides}
+            className="pres-nav-btn pres-nav-next"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="9 18 15 12 9 6"/>
+            </svg>
+          </button>
+        </div>
+
+        {/* Bottom Thumbnail Strip */}
+        <div className="pres-thumbnails">
+          <div className="pres-thumbnails-inner">
+            {Array.from({ length: totalSlides }, (_, i) => i + 1).map(num => (
+              <button
+                key={num}
+                onClick={() => { setCurrentSlide(num); setIsLoading(true); }}
+                className={`pres-thumb ${num === currentSlide ? 'pres-thumb-active' : ''}`}
+              >
+                <img
+                  src={asset(`${presentation.folder}/${num}.jpg`)}
+                  alt={`Thumbnail ${num}`}
+                  draggable={false}
+                />
+                <span className="pres-thumb-num">{num}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ================= MODALS =================
-function CountryModal({ country, modalT, contactT, onClose }) {
+function CountryModal({ country, modalT, contactT, onClose, onOpenPresentation }) {
   if (!country) return null;
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -43,7 +210,7 @@ function CountryModal({ country, modalT, contactT, onClose }) {
           {country.image.startsWith('bg') ? (
             <div className={country.image} style={{ width: '100%', height: '100%' }} />
           ) : (
-            <img src={country.image} alt={country.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => { e.target.src = '/harvard.jpg'; }} />
+            <img src={asset(country.image)} alt={country.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => { e.target.src = asset('/harvard.jpg'); }} />
           )}
           <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(10,17,40,0.8) 0%, transparent 100%)' }} />
           <div style={{ position: 'absolute', bottom: '20px', left: '32px' }}>
@@ -77,6 +244,15 @@ function CountryModal({ country, modalT, contactT, onClose }) {
             ))}
           </ul>
 
+          {country.presentation && (
+            <button
+              onClick={() => onOpenPresentation(country)}
+              className="btn-secondary"
+              style={{ width: '100%', padding: '1.2rem', marginBottom: '16px', justifyContent: 'center', border: '2px solid var(--primary)', color: 'var(--primary)', background: 'rgba(51, 84, 255, 0.05)', cursor: 'pointer' }}
+            >
+              {modalT.presentationCta} <span style={{ fontSize: '1.2rem' }}>📑</span>
+            </button>
+          )}
           <a href={`https://wa.me/996709694959?text=Здравствуйте! Интересует обучение в стране: ${country.name}`} target="_blank" rel="noreferrer" className="btn-primary" style={{ width: '100%', padding: '1.2rem' }}>
             {modalT.contactCta} <span style={{ fontSize: '1.2rem' }}>💬</span>
           </a>
@@ -107,6 +283,7 @@ function App() {
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [showPrivacy, setShowPrivacy] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [presentationData, setPresentationData] = useState(null);
   const t = locales[lang];
 
   useEffect(() => {
@@ -116,18 +293,33 @@ function App() {
   }, []);
 
   useEffect(() => {
-    document.body.style.overflow = (selectedCountry || showPrivacy) ? 'hidden' : 'auto';
-  }, [selectedCountry, showPrivacy]);
+    document.body.style.overflow = (selectedCountry || showPrivacy || presentationData) ? 'hidden' : 'auto';
+  }, [selectedCountry, showPrivacy, presentationData]);
+
+  const handleOpenPresentation = useCallback((country) => {
+    setSelectedCountry(null);
+    // Small delay to let modal close animation happen
+    setTimeout(() => {
+      setPresentationData({ presentation: country.presentation, name: country.name });
+    }, 100);
+  }, []);
 
   return (
     <div>
-      {selectedCountry && <CountryModal country={selectedCountry} modalT={t.destinations.modal} contactT={t.whatsAppText} onClose={() => setSelectedCountry(null)} />}
+      {selectedCountry && <CountryModal country={selectedCountry} modalT={t.destinations.modal} contactT={t.whatsAppText} onClose={() => setSelectedCountry(null)} onOpenPresentation={handleOpenPresentation} />}
       {showPrivacy && <PrivacyModal title={t.legal.privacyTitle} text={t.legal.privacyText} onClose={() => setShowPrivacy(false)} />}
+      {presentationData && (
+        <PresentationViewer
+          presentation={presentationData.presentation}
+          countryName={presentationData.name}
+          onClose={() => setPresentationData(null)}
+        />
+      )}
 
       {/* =========== NAV =========== */}
       <nav className={scrolled ? 'header-scrolled' : ''} style={{ position: 'fixed', top: 0, left: 0, right: 0, padding: scrolled ? '1rem 4rem' : '1.5rem 4rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 100, transition: 'all 0.4s ease' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }} onClick={() => window.scrollTo(0,0)}>
-          <img src="/logo.png" alt="Logo" style={{ height: '70px', objectFit: 'contain' }} onError={(e) => { e.target.style.display='none'; }} />
+          <img src={asset('/logo.png')} alt="Logo" style={{ height: '70px', objectFit: 'contain' }} onError={(e) => { e.target.style.display='none'; }} />
         </div>
         <div style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
           <div style={{ display: 'flex', gap: '0.5rem' }}>
@@ -168,6 +360,7 @@ function App() {
               <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
                 <a href="#destinations" className="btn-primary">{t.hero.cta} <span>✈️</span></a>
                 <a href="https://www.instagram.com/consultteam.kg/" target="_blank" rel="noreferrer" className="btn-secondary">Instagram</a>
+                <a href="https://t.me/+56UxGvvdmtU5NDMy" target="_blank" rel="noreferrer" className="btn-secondary">Telegram</a>
               </div>
             </Reveal>
           </div>
@@ -176,12 +369,12 @@ function App() {
           <div style={{ position: 'relative', height: '600px' }}>
             <Reveal delay={0.4} direction="left" style={{ position: 'absolute', top: 0, right: 0, width: '65%', height: '80%', zIndex: 2 }}>
               <div className="shape-float" style={{ width: '100%', height: '100%', borderRadius: 'var(--radius-arch)', overflow: 'hidden', border: '10px solid var(--bg-main)', boxShadow: 'var(--shadow-soft)' }}>
-                <img src="/taiwan.jpg" alt="Taiwan" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={e => e.target.src='/harvard.jpg'} />
+                <img src={asset('/taiwan.jpg')} alt="Taiwan" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={e => e.target.src=asset('/harvard.jpg')} />
               </div>
             </Reveal>
             <Reveal delay={0.6} direction="up" style={{ position: 'absolute', bottom: 0, left: 0, width: '55%', height: '60%', zIndex: 3 }}>
               <div className="shape-float-delay" style={{ width: '100%', height: '100%', borderRadius: 'var(--radius-arch)', overflow: 'hidden', border: '10px solid var(--bg-main)', boxShadow: 'var(--shadow-soft)' }}>
-                <img src="/italy.jpg" alt="Italy" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={e => e.target.src='/oxford.jpg'} />
+                <img src={asset('/italy.jpg')} alt="Italy" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={e => e.target.src=asset('/oxford.jpg')} />
               </div>
             </Reveal>
             
@@ -248,7 +441,7 @@ function App() {
                     {country.image.startsWith('bg') ? (
                       <div className={country.image} />
                     ) : (
-                      <img src={country.image} alt={country.name} />
+                      <img src={asset(country.image)} alt={country.name} onError={e => e.target.src=asset('/harvard.jpg')} />
                     )}
                   </div>
                   <div className="arch-content">
@@ -277,7 +470,7 @@ function App() {
               <Reveal key={exam.title} delay={i * 0.15}>
                 <div style={{ background: 'var(--bg-card)', borderRadius: 'var(--radius-xl)', padding: '3rem', boxShadow: 'var(--shadow-soft)', position: 'relative', overflow: 'hidden' }}>
                   <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'var(--bg-alt)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '2rem' }}>
-                    <img src={exam.img} alt={exam.title} style={{ width: '50%' }} onError={e => e.target.style.display='none'} />
+                    <img src={asset(exam.img)} alt={exam.title} style={{ width: '50%' }} onError={e => e.target.style.display='none'} />
                   </div>
                   <h3 style={{ fontSize: '2.2rem', fontWeight: 900, marginBottom: '1rem' }}>{exam.title}</h3>
                   <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem', lineHeight: 1.6, marginBottom: '2rem' }}>{exam.desc}</p>
@@ -307,15 +500,25 @@ function App() {
           <div className="display-grid" style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr', gap: '4rem', marginBottom: '4rem' }}>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '2rem' }}>
-                <img src="/logo.png" alt="Logo" style={{ height: '100px', objectFit: 'contain', filter: 'brightness(0) invert(1)' }} onError={e => e.target.style.display='none'} />
+                <img src={asset('/logo.png')} alt="Logo" style={{ height: '100px', objectFit: 'contain', filter: 'brightness(0) invert(1)' }} onError={e => e.target.style.display='none'} />
               </div>
               <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '1.05rem', lineHeight: 1.7, maxWidth: '400px', marginBottom: '2rem' }}>{t.footer.desc}</p>
               
-              {/* Instagram Integration */}
-              <a href="https://www.instagram.com/consultteam.kg/" target="_blank" rel="noreferrer" className="btn-primary" style={{ background: 'rgba(255,255,255,0.1)', color: '#fff', padding: '0.8rem 2rem', fontSize: '1rem', boxShadow: 'none' }}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '8px' }}><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
-                Instagram
-              </a>
+              {/* Social Links */}
+              <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+                <a href="https://www.instagram.com/consultteam.kg/" target="_blank" rel="noreferrer" className="btn-primary" style={{ background: 'rgba(255,255,255,0.1)', color: '#fff', padding: '0.8rem 1.5rem', fontSize: '1rem', boxShadow: 'none' }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '8px' }}><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                  Instagram
+                </a>
+                <a href="https://www.threads.com/@consulteam.kg" target="_blank" rel="noreferrer" className="btn-primary" style={{ background: 'rgba(255,255,255,0.1)', color: '#fff', padding: '0.8rem 1.5rem', fontSize: '1rem', boxShadow: 'none' }}>
+                  <svg width="20" height="20" viewBox="0 0 192 192" fill="currentColor" style={{ marginRight: '8px' }}><path d="M141.5 88.6c-.7-.3-1.4-.6-2.1-.9-1.2-22.7-13.6-35.7-34.5-35.9h-.3c-12.5 0-22.9 5.3-29.3 15l11.5 7.9c4.8-7.2 12.3-8.8 17.8-8.8h.2c6.9 0 12.1 2 15.4 5.9 2.4 2.9 4 6.8 4.8 11.8-6-1-12.5-1.3-19.4-.9-19.5 1.1-32 12.5-31.2 28.3.4 8 4.4 14.9 11.2 19.4 5.8 3.8 13.2 5.6 21 5.2 10.2-.6 18.2-4.5 23.8-11.6 4.2-5.4 6.9-12.4 8.1-21.2 4.9 3 8.5 6.9 10.5 11.6 3.4 8 3.6 21.2-7.1 31.9-9.4 9.4-20.7 13.4-37.8 13.6-19 0-33.3-6.1-42.6-18.1-8.7-11.3-13.2-27.5-13.4-48.3.2-20.8 4.7-37 13.4-48.3 9.3-12 23.6-18.1 42.6-18.1 19.1.1 33.6 6.3 43.1 18.3 4.7 5.9 8.2 13.3 10.6 21.9l13.5-3.6c-2.9-10.6-7.4-19.7-13.6-27.5-12.1-15.3-29.9-23.2-52.9-23.4h-.1c-22.9.2-40.5 8.1-52.3 23.5C11.7 62.1 6.5 81.2 6.3 105v.1c.2 23.8 5.4 42.9 15.5 56.7 11.8 15.4 29.4 23.3 52.3 23.5h.1c20.4-.1 34.7-5.5 46.5-17.2 15.5-15.5 15-34.9 9.9-46.8-3.7-8.6-10.7-15.5-20.3-20.2zm-35.4 45.3c-8.7.5-17.7-3.4-18.1-11.6-.3-6.1 4.3-12.8 18.6-13.7 1.6-.1 3.2-.1 4.8-.1 5.2 0 10.1.5 14.5 1.5-1.6 20.5-11.2 23.4-19.8 23.9z"/></svg>
+                  Threads
+                </a>
+                <a href="https://t.me/+56UxGvvdmtU5NDMy" target="_blank" rel="noreferrer" className="btn-primary" style={{ background: 'rgba(255,255,255,0.1)', color: '#fff', padding: '0.8rem 1.5rem', fontSize: '1rem', boxShadow: 'none' }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style={{ marginRight: '8px' }}><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+                  Telegram
+                </a>
+              </div>
             </div>
             
             <div>

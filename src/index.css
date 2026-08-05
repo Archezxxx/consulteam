@@ -298,6 +298,270 @@ h1, h2, h3, h4, h5 {
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05) !important;
 }
 
+/* ================= PRESENTATION VIEWER ================= */
+.presentation-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 8, 22, 0.95);
+  backdrop-filter: blur(20px);
+  z-index: 5000;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  animation: fadeIn 0.3s forwards;
+}
+
+.presentation-viewer {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #0a0e1a;
+  overflow: hidden;
+}
+
+.presentation-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  background: rgba(10, 14, 26, 0.9);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  flex-shrink: 0;
+}
+
+.pres-close-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+.pres-close-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.pres-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.02em;
+}
+
+.pres-subtitle {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.4);
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  margin-top: 2px;
+}
+
+.pres-action-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+.pres-action-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+/* Progress Bar */
+.pres-progress-track {
+  height: 3px;
+  background: rgba(255, 255, 255, 0.06);
+  flex-shrink: 0;
+}
+
+.pres-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), #6B8AFF);
+  transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  border-radius: 0 2px 2px 0;
+}
+
+/* Slide Area */
+.pres-slide-area {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  min-height: 0;
+  padding: 16px;
+  gap: 12px;
+}
+
+.pres-slide-container {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.pres-slide-img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 8px;
+  user-select: none;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+}
+
+.pres-zoomed .pres-slide-container {
+  overflow: auto;
+}
+
+.pres-zoomed .pres-slide-img {
+  max-width: none;
+  max-height: none;
+  width: 100%;
+  cursor: grab;
+}
+
+/* Navigation Buttons */
+.pres-nav-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s ease;
+  flex-shrink: 0;
+  backdrop-filter: blur(10px);
+}
+
+.pres-nav-btn:hover:not(:disabled) {
+  background: rgba(51, 84, 255, 0.3);
+  border-color: rgba(51, 84, 255, 0.5);
+  transform: scale(1.08);
+}
+
+.pres-nav-btn:disabled {
+  opacity: 0.2;
+  cursor: not-allowed;
+}
+
+/* Loader */
+.pres-loader {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.pres-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Thumbnails Strip */
+.pres-thumbnails {
+  flex-shrink: 0;
+  padding: 12px 16px;
+  background: rgba(10, 14, 26, 0.95);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+}
+
+.pres-thumbnails-inner {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.15) transparent;
+}
+
+.pres-thumbnails-inner::-webkit-scrollbar {
+  height: 4px;
+}
+.pres-thumbnails-inner::-webkit-scrollbar-track {
+  background: transparent;
+}
+.pres-thumbnails-inner::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.15);
+  border-radius: 4px;
+}
+
+.pres-thumb {
+  position: relative;
+  flex-shrink: 0;
+  width: 80px;
+  height: 52px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.pres-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.pres-thumb:hover {
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.pres-thumb-active {
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 12px rgba(51, 84, 255, 0.4);
+}
+
+.pres-thumb-num {
+  position: absolute;
+  bottom: 2px;
+  right: 4px;
+  font-size: 0.6rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 700;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+}
+
 /* ================= MOBILE RESPONSIVE ================= */
 @media (max-width: 900px) {
   html {
@@ -324,6 +588,39 @@ h1, h2, h3, h4, h5 {
   footer .display-grid {
     grid-template-columns: 1fr !important;
     gap: 2rem !important;
+  }
+
+  /* Presentation Viewer Mobile */
+  .presentation-header {
+    padding: 12px 16px;
+  }
+
+  .pres-title {
+    font-size: 1rem;
+  }
+
+  .pres-slide-area {
+    padding: 8px;
+    gap: 6px;
+  }
+
+  .pres-nav-btn {
+    width: 36px;
+    height: 36px;
+  }
+
+  .pres-nav-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .pres-thumb {
+    width: 60px;
+    height: 40px;
+  }
+
+  .pres-thumbnails {
+    padding: 8px 12px;
   }
 }
 
