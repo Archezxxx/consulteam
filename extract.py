@@ -2,8 +2,9 @@ import os
 from pptx import Presentation
 import fitz
 
-folder = r"c:\aim-exam_new\Consulteam\information"
-out_dir = r"c:\aim-exam_new\Consulteam\information_extracted"
+base = os.path.dirname(os.path.abspath(__file__))
+folder = os.path.join(base, "information")
+out_dir = os.path.join(base, "information_extracted")
 os.makedirs(out_dir, exist_ok=True)
 
 for file in os.listdir(folder):
