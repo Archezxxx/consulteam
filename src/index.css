@@ -606,6 +606,16 @@ h1, h2, h3, h4, h5 {
   height: 560px;
 }
 
+/* Desktop Hero Grid */
+@media (min-width: 841px) {
+  .hero-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 3rem !important;
+    align-items: center !important;
+  }
+}
+
 /* ================= COMPREHENSIVE TABLET & MOBILE RESPONSIVE ================= */
 @media (max-width: 1024px) {
   .hero-h1 {
@@ -646,9 +656,25 @@ h1, h2, h3, h4, h5 {
     min-height: auto !important;
   }
 
+  /* Hero Mobile Order: 1. Title/Badge -> 2. Images Animation Showcase -> 3. Subtitle & Action Buttons */
   .hero-grid {
-    grid-template-columns: 1fr !important;
-    gap: 2.25rem !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1.5rem !important;
+  }
+
+  .hero-title-group {
+    order: 1 !important;
+  }
+
+  .hero-images-wrapper {
+    order: 2 !important;
+    height: 380px !important;
+    margin: 0.5rem 0 1rem 0 !important;
+  }
+
+  .hero-action-group {
+    order: 3 !important;
   }
 
   .hero-h1 {
@@ -667,12 +693,6 @@ h1, h2, h3, h4, h5 {
     letter-spacing: -0.03em !important;
   }
 
-  /* Hero Showcase Frame on Mobile */
-  .hero-images-wrapper {
-    height: 360px !important;
-    margin-top: 0.5rem;
-  }
-
   .hero-badge-float {
     bottom: 12px !important;
     right: 12px !important;
@@ -680,21 +700,21 @@ h1, h2, h3, h4, h5 {
     font-size: 0.95rem !important;
   }
 
-  /* Proportional Country Cards on Mobile */
+  /* Arch Country Cards on Mobile: Preserving exact PC Arch shape! */
   .arch-card {
-    height: 380px !important;
+    height: 460px !important;
     width: 100% !important;
-    border-radius: 40px 40px 24px 24px !important;
-    padding: 1rem !important;
+    border-radius: var(--radius-arch) !important;
+    padding: 1.25rem !important;
   }
 
   .arch-img-wrap {
-    border-radius: 32px 32px 16px 16px !important;
-    margin-bottom: 1rem !important;
+    border-radius: 140px 140px 20px 20px !important;
+    margin-bottom: 1.25rem !important;
   }
 
   .arch-content h3 {
-    font-size: 1.6rem !important;
+    font-size: 1.75rem !important;
   }
 
   /* Responsive Buttons */
@@ -806,20 +826,20 @@ h1, h2, h3, h4, h5 {
   }
 
   .hero-images-wrapper {
-    height: 290px !important;
+    height: 300px !important;
   }
 
   .arch-card {
-    height: 350px !important;
-    border-radius: 32px 32px 20px 20px !important;
+    height: 420px !important;
+    border-radius: var(--radius-arch) !important;
   }
 
   .arch-img-wrap {
-    border-radius: 24px 24px 14px 14px !important;
+    border-radius: 120px 120px 18px 18px !important;
   }
 
   .arch-content h3 {
-    font-size: 1.4rem !important;
+    font-size: 1.5rem !important;
   }
 
   .tag-outline {

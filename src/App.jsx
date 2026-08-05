@@ -46,6 +46,8 @@ function PresentationViewer({ presentation, countryName, onClose }) {
   const totalSlides = presentation.slides;
   const containerRef = useRef(null);
   const touchStartX = useRef(null);
+  const touchStartY = useRef(null);
+  const lastTap = useRef(0);
 
   const goNext = useCallback(() => {
     if (currentSlide < totalSlides) {
@@ -62,18 +64,33 @@ function PresentationViewer({ presentation, countryName, onClose }) {
   }, [currentSlide]);
 
   const handleTouchStart = (e) => {
+    if (isZoomed) return;
     touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
   };
 
   const handleTouchEnd = (e) => {
-    if (touchStartX.current === null) return;
+    if (isZoomed || touchStartX.current === null || touchStartY.current === null) return;
     const touchEndX = e.changedTouches[0].clientX;
+    const touchEndY = e.changedTouches[0].clientY;
     const diffX = touchStartX.current - touchEndX;
-    if (Math.abs(diffX) > 40) {
+    const diffY = touchStartY.current - touchEndY;
+
+    // Only navigate if horizontal swipe is prominent and > 60px to prevent tap jumping
+    if (Math.abs(diffX) > 60 && Math.abs(diffX) > Math.abs(diffY) * 1.5) {
       if (diffX > 0) goNext();
       else goPrev();
     }
     touchStartX.current = null;
+    touchStartY.current = null;
+  };
+
+  const handleImageDoubleTap = () => {
+    const now = Date.now();
+    if (now - lastTap.current < 300) {
+      setIsZoomed(z => !z);
+    }
+    lastTap.current = now;
   };
 
   useEffect(() => {
@@ -160,7 +177,7 @@ function PresentationViewer({ presentation, countryName, onClose }) {
           </button>
 
           {/* Slide Image */}
-          <div className="pres-slide-container">
+          <div className="pres-slide-container" onClick={handleImageDoubleTap}>
             {isLoading && (
               <div className="pres-loader">
                 <div className="pres-spinner" />
@@ -366,10 +383,10 @@ function App() {
         <div style={{ position: 'absolute', top: '-10%', right: '-5%', width: '600px', height: '600px', background: 'var(--bg-alt)', borderRadius: '50%', zIndex: -1 }} />
         <div style={{ position: 'absolute', bottom: '10%', left: '-5%', width: '300px', height: '300px', background: 'rgba(51, 84, 255, 0.05)', borderRadius: '50%', zIndex: -1 }} />
 
-        <div className="hero-grid" style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gap: '3rem', alignItems: 'center', width: '100%' }}>
+        <div className="hero-grid" style={{ maxWidth: '1200px', margin: '0 auto', width: '100%' }}>
           
-          {/* Left Text */}
-          <div>
+          {/* Hero Header / Title Group */}
+          <div className="hero-title-group">
             <Reveal delay={0.2} direction="right">
               <div className="tag-outline" style={{ marginBottom: '1.5rem' }}>✨ {t.hero.badge}</div>
             </Reveal>
@@ -379,21 +396,9 @@ function App() {
                 <span style={{ color: 'var(--primary)' }}>{t.hero.country}</span>
               </h1>
             </Reveal>
-            <Reveal delay={0.6} direction="right">
-              <p style={{ fontSize: '1.2rem', lineHeight: 1.6, color: 'var(--text-muted)', marginBottom: '2.5rem', maxWidth: '480px' }}>
-                {t.hero.subtitle}
-              </p>
-            </Reveal>
-            <Reveal delay={0.8} direction="right">
-              <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-                <a href="#destinations" className="btn-primary">{t.hero.cta} <span>✈️</span></a>
-                <a href="https://www.instagram.com/consultteam.kg/" target="_blank" rel="noreferrer" className="btn-secondary">Instagram</a>
-                <a href="https://t.me/+56UxGvvdmtU5NDMy" target="_blank" rel="noreferrer" className="btn-secondary">Telegram</a>
-              </div>
-            </Reveal>
           </div>
 
-          {/* Right Floating Arch Images */}
+          {/* Floating Arch Images Showcase */}
           <div className="hero-images-wrapper">
             <Reveal delay={0.4} direction="left" style={{ position: 'absolute', top: 0, right: 0, width: '65%', height: '80%', zIndex: 2 }}>
               <div className="shape-float" style={{ width: '100%', height: '100%', borderRadius: 'var(--radius-arch)', overflow: 'hidden', border: '8px solid var(--bg-main)', boxShadow: 'var(--shadow-soft)' }}>
@@ -413,6 +418,22 @@ function App() {
             <div className="hero-badge-float" style={{ position: 'absolute', bottom: '15%', right: '0%', zIndex: 4, background: 'var(--secondary)', color: '#fff', padding: '0.8rem 1.25rem', borderRadius: '100px', fontWeight: 800, fontSize: '1.05rem', transform: 'rotate(-5deg)', boxShadow: '0 10px 20px rgba(255, 94, 51, 0.3)' }}>
               100% SUCCESS
             </div>
+          </div>
+
+          {/* Subtitle and Action Buttons Group */}
+          <div className="hero-action-group">
+            <Reveal delay={0.6} direction="right">
+              <p style={{ fontSize: '1.2rem', lineHeight: 1.6, color: 'var(--text-muted)', marginBottom: '2.5rem', maxWidth: '480px' }}>
+                {t.hero.subtitle}
+              </p>
+            </Reveal>
+            <Reveal delay={0.8} direction="right">
+              <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                <a href="#destinations" className="btn-primary">{t.hero.cta} <span>✈️</span></a>
+                <a href="https://www.instagram.com/consultteam.kg/" target="_blank" rel="noreferrer" className="btn-secondary">Instagram</a>
+                <a href="https://t.me/+56UxGvvdmtU5NDMy" target="_blank" rel="noreferrer" className="btn-secondary">Telegram</a>
+              </div>
+            </Reveal>
           </div>
         </div>
       </section>
