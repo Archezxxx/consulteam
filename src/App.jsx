@@ -520,17 +520,32 @@ function App() {
             </div>
           </Reveal>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '2rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2rem' }}>
             {t.exams.cards.map((exam, i) => (
               <Reveal key={exam.title} delay={i * 0.15}>
-                <div style={{ background: 'var(--bg-card)', borderRadius: 'var(--radius-xl)', padding: '3rem', boxShadow: 'var(--shadow-soft)', position: 'relative', overflow: 'hidden' }}>
-                  <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'var(--bg-alt)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '2rem' }}>
-                    <img src={asset(exam.img)} alt={exam.title} style={{ width: '50%' }} onError={e => e.target.style.display='none'} />
+                <div style={{ background: 'var(--bg-card)', borderRadius: 'var(--radius-xl)', padding: '2.5rem', boxShadow: 'var(--shadow-soft)', position: 'relative', overflow: 'hidden', border: '1px solid var(--border-light)', display: 'flex', flexDirection: 'column', height: '100%', transition: 'var(--transition)' }} onMouseEnter={e => e.currentTarget.style.transform='translateY(-6px)'} onMouseLeave={e => e.currentTarget.style.transform='translateY(0)'}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem' }}>
+                    <div style={{ width: '70px', height: '70px', borderRadius: '18px', background: 'var(--bg-alt)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', padding: '10px', border: '1px solid var(--border-light)' }}>
+                      <img src={asset(exam.img)} alt={exam.title} style={{ width: '100%', height: '100%', objectFit: 'contain' }} onError={e => { e.target.style.display='none'; }} />
+                    </div>
+                    <span style={{ background: 'rgba(51, 84, 255, 0.08)', color: 'var(--primary)', fontWeight: 800, padding: '0.4rem 1rem', borderRadius: '100px', fontSize: '0.9rem', letterSpacing: '0.5px' }}>
+                      {exam.score}
+                    </span>
                   </div>
-                  <h3 style={{ fontSize: '2.2rem', fontWeight: 900, marginBottom: '1rem' }}>{exam.title}</h3>
-                  <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem', lineHeight: 1.6, marginBottom: '2rem' }}>{exam.desc}</p>
-                  <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 700, marginBottom: '0.5rem' }}>Target Score</p>
-                  <p style={{ fontSize: '1.4rem', color: 'var(--primary)', fontWeight: 800 }}>{exam.score}</p>
+
+                  <h3 style={{ fontSize: '2.2rem', fontWeight: 900, marginBottom: '0.75rem' }}>{exam.title}</h3>
+                  <p style={{ color: 'var(--text-muted)', fontSize: '1.05rem', lineHeight: 1.6, marginBottom: '1.5rem', flex: 1 }}>{exam.desc}</p>
+                  
+                  {exam.format && (
+                    <div style={{ paddingTop: '1.25rem', borderTop: '1px solid var(--border-light)' }}>
+                      <p style={{ fontSize: '0.75rem', color: 'var(--text-light)', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 700, marginBottom: '0.4rem' }}>
+                        Формат / Разделы
+                      </p>
+                      <p style={{ fontSize: '0.95rem', color: 'var(--text-dark)', fontWeight: 600 }}>
+                        {exam.format}
+                      </p>
+                    </div>
+                  )}
                 </div>
               </Reveal>
             ))}

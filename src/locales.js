@@ -209,11 +209,12 @@ export const locales = {
       titleHighlight: 'Экзамены',
       subtitle: 'Стандарты, открывающие двери в любую страну мира.',
       cards: [
-        { title: 'IELTS', desc: 'Тест на знание английского для Европы, Великобритании и др.', score: 'Нужен 6.5+', img: '/ielts.jpg', format: 'Аудирование, Чтение, Письмо, Говорение' },
-        { title: 'TOEFL', desc: 'Стандартный английский тест для США и не только.', score: 'Нужен 80+', img: '/toefl.png', format: 'Формат тестирования iBT на компьютере' },
-        { title: 'HSK', desc: 'Экзамен на знание китайского языка для вузов Китая и Тайваня.', score: 'Уровень HSK 4–5', img: '/hsk.png', format: 'Аудирование, Чтение, Письмо' },
-        { title: 'TÖMER', desc: 'Экзамен по турецкому языку для обучения в Турции.', score: 'Уровень B1–B2', img: '/tomer.png', format: 'Чтение, Письмо, Устная речь, Аудирование' },
-        { title: 'CSCA', desc: 'Вступительный экзамен для иностранцев на бакалавриат и гранты Правительства Китая (математика, физика, химия, китайский).', score: '~450-700 юаней ($65-100)', img: '/csca.png', format: 'Онлайн и в центрах, 5 раз в год' }
+        { title: 'IELTS', desc: 'Тест на знание английского для Европы, Великобритании и др.', score: 'Нужен 6.5+', img: '/ielts.png', format: 'Listening, Reading, Writing, Speaking' },
+        { title: 'TOEFL', desc: 'Стандартный английский тест для США и мировых вузов.', score: 'Нужен 80+', img: '/toefl.png', format: 'iBT формат (Компьютерное тестирование)' },
+        { title: 'SAT', desc: 'Академический тест для поступления в топ-университеты США и Азии.', score: 'Нужен 1350+', img: '/sat.png', format: 'Reading & Writing, Math' },
+        { title: 'HSK', desc: 'Экзамен на знание китайского языка для вузов Китая и Тайваня.', score: 'Уровень HSK 4–5', img: '/hsk.png', format: 'Listening, Reading, Writing' },
+        { title: 'TÖMER', desc: 'Экзамен по турецкому языку для обучения в университетах Турции.', score: 'Уровень B1–B2', img: '/tomer.png', format: 'Reading, Writing, Speaking, Listening' },
+        { title: 'CSCA', desc: 'Вступительный экзамен на бакалавриат и гранты Правительства Китая.', score: '~450-700 юаней', img: '/csca.png', format: 'Математика, Физика, Химия, Китайский' }
       ]
     },
     cases: {
@@ -295,11 +296,12 @@ export const locales = {
       titleHighlight: 'Талаптары',
       subtitle: 'Дүйнөнүн каалаган өлкөсүнө эшик ачкан стандарттар.',
       cards: [
-        { title: 'IELTS', desc: 'Англис тилдүү өлкөлөр үчүн эл аралык тил сынагы.', score: '6.0+ талап', img: '/ielts.jpg', format: 'Listening, Reading, Writing, Speaking' },
+        { title: 'IELTS', desc: 'Англис тилдүү өлкөлөр үчүн эл аралык тил сынагы.', score: '6.0+ талап', img: '/ielts.png', format: 'Listening, Reading, Writing, Speaking' },
         { title: 'TOEFL', desc: 'АКШ университеттери үчүн башкы англис тести.', score: '80+ талап', img: '/toefl.png', format: 'Reading, Listening, Speaking, Writing' },
-        { title: 'HSK', desc: 'Кытай тилин билүү деңгээлин аныктаган сынак.', score: 'HSK 4+ талап', img: '/hsk.png', format: '6 деңгээл: HSK 1-6' },
-        { title: 'TÖMER', desc: 'Түрк тилин билүү боюнча расмий сертификат.', score: 'B2+ талап', img: '/tomer.png', format: 'Түрк университеттери үчүн' },
-        { title: 'CSCA', desc: 'Кытайдын бакалавриатына жана өкмөттүк гранттарына кирүү сынагы (математика, физика, химия, кытай тили).', score: '~450-700 юань ($65-100)', img: '/csca.png', format: 'Онлайн жана борборлордо, жылына 5 жолу' }
+        { title: 'SAT', desc: 'АКШ жана Азия университеттери үчүн академиялык тест.', score: '1350+ талап', img: '/sat.png', format: 'Reading & Writing, Math' },
+        { title: 'HSK', desc: 'Кытай тилин билүү деңгээлин аныктаган сынак.', score: 'HSK 4+ талап', img: '/hsk.png', format: 'Listening, Reading, Writing' },
+        { title: 'TÖMER', desc: 'Түрк тилин билүү боюнча расмий сертификат.', score: 'B2+ талап', img: '/tomer.png', format: 'Reading, Writing, Speaking, Listening' },
+        { title: 'CSCA', desc: 'Кытайдын бакалавриатына жана өкмөттүк гранттарына кирүү сынагы.', score: '~450-700 юань', img: '/csca.png', format: 'Математика, Физика, Химия, Кытай тили' }
       ]
     },
     cases: {
@@ -381,11 +383,12 @@ export const locales = {
       titleHighlight: 'Standards',
       subtitle: 'The universal metrics that open global doors.',
       cards: [
-        { title: 'IELTS', desc: 'International English test for study abroad.', score: 'Requires 6.0+', img: '/ielts.jpg', format: 'Listening, Reading, Writing, Speaking' },
-        { title: 'TOEFL', desc: 'Standard English test for US universities.', score: 'Requires 80+', img: '/toefl.png', format: 'Online iBT Format' },
+        { title: 'IELTS', desc: 'International English test for study abroad.', score: 'Requires 6.0+', img: '/ielts.png', format: 'Listening, Reading, Writing, Speaking' },
+        { title: 'TOEFL', desc: 'Standard English test for US & global universities.', score: 'Requires 80+', img: '/toefl.png', format: 'Online iBT Format' },
+        { title: 'SAT', desc: 'Standardized academic assessment for US & Asian universities.', score: 'Requires 1350+', img: '/sat.png', format: 'Reading & Writing, Math' },
         { title: 'HSK', desc: 'Chinese language proficiency test for China & Taiwan.', score: 'Requires HSK 4+', img: '/hsk.png', format: 'Listening, Reading, Writing' },
-        { title: 'TÖMER', desc: 'Official Turkish language certificate for study in Turkey.', score: 'Requires B1–B2', img: '/tomer.png', format: 'For Turkish universities' },
-        { title: 'CSCA', desc: 'China Scholastic Competency Assessment — entrance test for undergraduate programs & Chinese Government Scholarships (Math, Physics, Chemistry, Chinese).', score: '~450-700 RMB ($65-100)', img: '/csca.png', format: 'Online & test centers, 5 times a year' }
+        { title: 'TÖMER', desc: 'Official Turkish language certificate for study in Turkey.', score: 'Requires B1–B2', img: '/tomer.png', format: 'Reading, Writing, Speaking, Listening' },
+        { title: 'CSCA', desc: 'China Scholastic Competency Assessment for undergraduate admissions & scholarships.', score: '~450-700 RMB', img: '/csca.png', format: 'Math, Physics, Chemistry, Chinese' }
       ]
     },
     cases: {
