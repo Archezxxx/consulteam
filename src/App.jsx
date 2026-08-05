@@ -278,13 +278,21 @@ function PrivacyModal({ title, text, onClose }) {
 }
 
 // ================= MAIN APP =================
+const moreCountriesText = { ru: 'Больше стран', ky: 'Дагы өлкөлөр', en: 'More Countries' };
+const lessCountriesText = { ru: 'Свернуть', ky: 'Жыйнаштыруу', en: 'Show Less' };
+
 function App() {
   const [lang, setLang] = useState('ru');
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [showPrivacy, setShowPrivacy] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [presentationData, setPresentationData] = useState(null);
+  const [showAllCountries, setShowAllCountries] = useState(false);
   const t = locales[lang];
+
+  // Countries with presentations shown first
+  const featuredCountries = t.destinations.countries.filter(c => c.presentation);
+  const otherCountries = t.destinations.countries.filter(c => !c.presentation);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -434,7 +442,7 @@ function App() {
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '2.5rem' }}>
-            {t.destinations.countries.map((country, i) => (
+            {featuredCountries.map((country, i) => (
               <Reveal key={country.id} delay={i * 0.1}>
                 <div className="arch-card" onClick={() => setSelectedCountry(country)}>
                   <div className="arch-img-wrap">
@@ -452,6 +460,53 @@ function App() {
               </Reveal>
             ))}
           </div>
+
+          {/* Expandable Other Countries */}
+          <AnimatePresence>
+            {showAllCountries && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                style={{ overflow: 'hidden' }}
+              >
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '2.5rem', marginTop: '2.5rem' }}>
+                  {otherCountries.map((country, i) => (
+                    <Reveal key={country.id} delay={i * 0.1}>
+                      <div className="arch-card" onClick={() => setSelectedCountry(country)}>
+                        <div className="arch-img-wrap">
+                          {country.image.startsWith('bg') ? (
+                            <div className={country.image} />
+                          ) : (
+                            <img src={asset(country.image)} alt={country.name} onError={e => e.target.src=asset('/harvard.jpg')} />
+                          )}
+                        </div>
+                        <div className="arch-content">
+                          <h3 style={{ fontSize: '2rem', fontWeight: 900, marginBottom: '0.5rem' }}>{country.name}</h3>
+                          <p style={{ color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', fontSize: '0.85rem', letterSpacing: '1px' }}>Explore &rarr;</p>
+                        </div>
+                      </div>
+                    </Reveal>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Show More / Less Button */}
+          <Reveal delay={0.3}>
+            <div style={{ textAlign: 'center', marginTop: '3rem' }}>
+              <button
+                onClick={() => setShowAllCountries(!showAllCountries)}
+                className="btn-secondary"
+                style={{ padding: '1rem 3rem', cursor: 'pointer', gap: '0.8rem' }}
+              >
+                {showAllCountries ? lessCountriesText[lang] : moreCountriesText[lang]}
+                <span style={{ fontSize: '1.1rem', transition: 'transform 0.3s', display: 'inline-block', transform: showAllCountries ? 'rotate(180deg)' : 'rotate(0deg)' }}>↓</span>
+              </button>
+            </div>
+          </Reveal>
         </div>
       </section>
 
