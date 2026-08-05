@@ -214,7 +214,7 @@ export const locales = {
         { title: 'SAT', desc: 'Академический тест для поступления в топ-университеты США и Азии.', score: 'Нужен 1350+', img: '/sat.png', format: 'Reading & Writing, Math' },
         { title: 'HSK', desc: 'Экзамен на знание китайского языка для вузов Китая и Тайваня.', score: 'Уровень HSK 4–5', img: '/hsk.png', format: 'Listening, Reading, Writing' },
         { title: 'TÖMER', desc: 'Экзамен по турецкому языку для обучения в университетах Турции.', score: 'Уровень B1–B2', img: '/tomer.png', format: 'Reading, Writing, Speaking, Listening' },
-        { title: 'CSCA', desc: 'Вступительный экзамен на бакалавриат и гранты Правительства Китая.', score: '~450-700 юаней', img: '/csca.png', format: 'Математика, Физика, Химия, Китайский' }
+        { title: 'CSCA', desc: 'Вступительный экзамен на бакалавриат и гранты Правительства Китая.', score: 'Нужен 500+', img: '/csca.png', format: 'Математика, Физика, Химия, Китайский' }
       ]
     },
     cases: {
@@ -301,7 +301,7 @@ export const locales = {
         { title: 'SAT', desc: 'АКШ жана Азия университеттери үчүн академиялык тест.', score: '1350+ талап', img: '/sat.png', format: 'Reading & Writing, Math' },
         { title: 'HSK', desc: 'Кытай тилин билүү деңгээлин аныктаган сынак.', score: 'HSK 4+ талап', img: '/hsk.png', format: 'Listening, Reading, Writing' },
         { title: 'TÖMER', desc: 'Түрк тилин билүү боюнча расмий сертификат.', score: 'B2+ талап', img: '/tomer.png', format: 'Reading, Writing, Speaking, Listening' },
-        { title: 'CSCA', desc: 'Кытайдын бакалавриатына жана өкмөттүк гранттарына кирүү сынагы.', score: '~450-700 юань', img: '/csca.png', format: 'Математика, Физика, Химия, Кытай тили' }
+        { title: 'CSCA', desc: 'Кытайдын бакалавриатына жана өкмөттүк гранттарына кирүү сынагы.', score: '500+ талап', img: '/csca.png', format: 'Математика, Физика, Химия, Кытай тили' }
       ]
     },
     cases: {
@@ -388,7 +388,7 @@ export const locales = {
         { title: 'SAT', desc: 'Standardized academic assessment for US & Asian universities.', score: 'Requires 1350+', img: '/sat.png', format: 'Reading & Writing, Math' },
         { title: 'HSK', desc: 'Chinese language proficiency test for China & Taiwan.', score: 'Requires HSK 4+', img: '/hsk.png', format: 'Listening, Reading, Writing' },
         { title: 'TÖMER', desc: 'Official Turkish language certificate for study in Turkey.', score: 'Requires B1–B2', img: '/tomer.png', format: 'Reading, Writing, Speaking, Listening' },
-        { title: 'CSCA', desc: 'China Scholastic Competency Assessment for undergraduate admissions & scholarships.', score: '~450-700 RMB', img: '/csca.png', format: 'Math, Physics, Chemistry, Chinese' }
+        { title: 'CSCA', desc: 'China Scholastic Competency Assessment for undergraduate admissions & scholarships.', score: 'Requires 500+', img: '/csca.png', format: 'Math, Physics, Chemistry, Chinese' }
       ]
     },
     cases: {
