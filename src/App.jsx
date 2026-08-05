@@ -1,3 +1,7 @@
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { motion, AnimatePresence, useInView } from 'framer-motion';
+import { locales } from './locales';
+
 const BASE_URL = import.meta.env.BASE_URL || '/';
 function asset(path) {
   if (!path) return '';
