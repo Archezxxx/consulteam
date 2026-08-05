@@ -44,11 +44,11 @@ By using our site and contacting us via WhatsApp, you consent to this privacy po
 const countryStats = {
   taiwan: {
     image: '/taiwan.jpg',
+    presentation: { folder: '/presentations/taiwan', slides: 28 },
     tuition: '$1,500 - $3,500 / год',
     living: '$300 - $500 / месяц',
     scholarships: 'MOE Taiwan Scholarship, University Grants (Скидки до 100%)',
-    topUnis: ['National Taiwan University', 'National Tsing Hua University', 'Ming Chuan University'],
-    presentation: { folder: '/presentations/taiwan', slides: 28 }
+    topUnis: ['National Taiwan University', 'National Tsing Hua University', 'Ming Chuan University']
   },
   italy: {
     image: '/italy.jpg',
@@ -69,9 +69,9 @@ const countryStats = {
   malaysia: {
     image: '/malaysia.jpg',
     presentation: { folder: '/presentations/malaysia', slides: 19 },
-    tuition: '$4,600 - $4,900 / год (INTI, ~$9,200-9,800 за 2 года)',
-    living: '$200 - $300 / месяц',
-    scholarships: 'American Degree Transfer Program, скидки от вузов. Виза $800',
+    tuition: '$4,000 - $8,000 / год',
+    living: '$300 - $450 / месяц',
+    scholarships: 'Merit-based скидки от вузов (До 50%)',
     topUnis: ['INTI International University', 'Taylor\'s University', 'APU']
   },
   china: {
@@ -79,8 +79,16 @@ const countryStats = {
     presentation: { folder: '/presentations/china', slides: 22 },
     tuition: '$2,500 - $5,000 / год',
     living: '$300 - $600 / месяц',
-    scholarships: 'CSC Government Scholarship, Провинциальные гранты (обучение 2-3x дешевле Европы/США)',
-    topUnis: ['Tsinghua University', 'Peking University', 'Shandong University of Technology']
+    scholarships: 'CSC Government Scholarship, Провинциальные гранты',
+    topUnis: ['Tsinghua University', 'Peking University', 'Zhejiang University']
+  },
+  czech: {
+    image: '/czech.jpg',
+    presentation: { folder: '/presentations/czech', slides: 15 },
+    tuition: '0€ / год (на чешском)',
+    living: '€400 - €700 / месяц',
+    scholarships: 'Бесплатное обучение в гос. вузах',
+    topUnis: ['Charles University', 'Czech Technical University (CTU)']
   },
   korea: {
     image: '/korea.jpg',
@@ -88,57 +96,6 @@ const countryStats = {
     living: '$600 - $900 / месяц',
     scholarships: 'GKS (Global Korea Scholarship)',
     topUnis: ['Seoul National University', 'Yonsei University', 'Korea University']
-  },
-  // === Новые страны. Данные ориентировочные — заменить на реальные из презентаций ===
-  poland: {
-    image: '/poland.jpg',
-    tuition: '€2,000 - €4,000 / год',
-    living: '€400 - €600 / месяц',
-    scholarships: 'NAWA, стипендии вузов (уточняется)',
-    topUnis: ['University of Warsaw', 'Jagiellonian University', 'Warsaw University of Technology']
-  },
-  hungary: {
-    image: '/hungary.jpg',
-    tuition: '€3,000 - €5,000 / год',
-    living: '€400 - €600 / месяц',
-    scholarships: 'Stipendium Hungaricum (уточняется)',
-    topUnis: ['Eötvös Loránd University', 'University of Debrecen', 'Budapest Univ. of Technology']
-  },
-  spain: {
-    image: '/spain.jpg',
-    tuition: '€1,500 - €4,000 / год',
-    living: '€600 - €900 / месяц',
-    scholarships: 'Стипендии вузов и региональные гранты (уточняется)',
-    topUnis: ['University of Barcelona', 'Complutense University of Madrid', 'Autonomous Univ. of Madrid']
-  },
-  czech: {
-    image: '/czech.jpg',
-    presentation: { folder: '/presentations/czech', slides: 15 },
-    tuition: 'Бесплатно на чешском / €2,000-5,000 на английском',
-    living: '€400 - €600 / месяц',
-    scholarships: 'Гранты вузов (уточняется)',
-    topUnis: ['Charles University', 'Czech Technical University', 'Masaryk University']
-  },
-  usa: {
-    image: '/usa.png',
-    tuition: '$15,000 - $40,000 / год',
-    living: '$800 - $1,500 / месяц',
-    scholarships: 'Merit & need-based стипендии вузов (уточняется)',
-    topUnis: ['Harvard University', 'MIT', 'Stanford University']
-  },
-  austria: {
-    image: '/austria.jpg',
-    tuition: '€1,500 / год (гос.) / выше в частных',
-    living: '€700 - €1,000 / месяц',
-    scholarships: 'OeAD, стипендии вузов (уточняется)',
-    topUnis: ['University of Vienna', 'TU Wien', 'University of Graz']
-  },
-  germany: {
-    image: '/germany.png',
-    tuition: 'Бесплатно (гос.) + сбор €150-350 / семестр',
-    living: '€800 - €1,100 / месяц',
-    scholarships: 'DAAD, стипендии фондов (уточняется)',
-    topUnis: ['TU München', 'LMU Munich', 'Heidelberg University']
   }
 };
 
@@ -190,10 +147,9 @@ export const locales = {
         scholarsTitle: 'Гранты и Стипендии',
         unisTitle: 'Лучшие Университеты:',
         contactCta: 'Спланировать поступление сюда',
-        presentationCta: 'Посмотреть презентацию',
       },
-      countries: mapCountries(['taiwan', 'china', 'turkey', 'poland', 'malaysia', 'italy', 'austria', 'hungary', 'spain', 'czech', 'usa', 'germany', 'korea'], {
-        taiwan: 'Тайвань', china: 'Китай', turkey: 'Турция', poland: 'Польша', malaysia: 'Малайзия', italy: 'Италия', austria: 'Австрия', hungary: 'Венгрия', spain: 'Испания', czech: 'Чехия', usa: 'США', germany: 'Германия', korea: 'Южная Корея'
+      countries: mapCountries(['taiwan', 'italy', 'turkey', 'malaysia', 'china', 'korea'], {
+        taiwan: 'Тайвань', italy: 'Италия', turkey: 'Турция', malaysia: 'Малайзия', china: 'Китай', korea: 'Южная Корея'
       })
     },
     legal: {
@@ -209,12 +165,9 @@ export const locales = {
       titleHighlight: 'Экзамены',
       subtitle: 'Стандарты, открывающие двери в любую страну мира.',
       cards: [
-        { title: 'IELTS', desc: 'Тест на знание английского для Европы, Великобритании и др.', score: 'Нужен 6.5+', img: '/ielts.png', format: 'Listening, Reading, Writing, Speaking' },
-        { title: 'TOEFL', desc: 'Стандартный английский тест для США и мировых вузов.', score: 'Нужен 80+', img: '/toefl.png', format: 'iBT формат (Компьютерное тестирование)' },
-        { title: 'SAT', desc: 'Академический тест для поступления в топ-университеты США и Азии.', score: 'Нужен 1350+', img: '/sat.png', format: 'Reading & Writing, Math' },
-        { title: 'HSK', desc: 'Экзамен на знание китайского языка для вузов Китая и Тайваня.', score: 'Уровень HSK 4–5', img: '/hsk.png', format: 'Listening, Reading, Writing' },
-        { title: 'TÖMER', desc: 'Экзамен по турецкому языку для обучения в университетах Турции.', score: 'Уровень B1–B2', img: '/tomer.png', format: 'Reading, Writing, Speaking, Listening' },
-        { title: 'CSCA', desc: 'Вступительный экзамен на бакалавриат и гранты Правительства Китая.', score: 'Нужен 500+', img: '/csca.png', format: 'Математика, Физика, Химия, Китайский' }
+        { title: 'IELTS', desc: 'Тест на знание языка для развитых стран.', score: 'Нужен 7.0+', img: '/ielts.jpg', format: 'Аудирование, Чтение, Письмо, Говорение' },
+        { title: 'TOEFL', desc: 'Стандартный языковой тест для США.', score: 'Нужен 100+', img: '/toefl.png', format: 'Формат тестирования iBT на компьютере' },
+        { title: 'SAT', desc: 'Экзамен по логике для колледжей США.', score: 'Нужен 1400+', img: '/sat.jpg', format: 'Математика и аналитическое чтение' }
       ]
     },
     cases: {
@@ -277,10 +230,9 @@ export const locales = {
         scholarsTitle: 'Окуу гранттары',
         unisTitle: 'Мыкты Университеттер:',
         contactCta: 'Тапшырууну баштоо',
-        presentationCta: 'Презентацияны көрүү',
       },
-      countries: mapCountries(['taiwan', 'china', 'turkey', 'poland', 'malaysia', 'italy', 'austria', 'hungary', 'spain', 'czech', 'usa', 'germany', 'korea'], {
-        taiwan: 'Тайвань', china: 'Кытай', turkey: 'Түркия', poland: 'Польша', malaysia: 'Малайзия', italy: 'Италия', austria: 'Австрия', hungary: 'Венгрия', spain: 'Испания', czech: 'Чехия', usa: 'АКШ', germany: 'Германия', korea: 'Түштүк Корея'
+      countries: mapCountries(['taiwan', 'italy', 'turkey', 'malaysia', 'china', 'korea'], {
+        taiwan: 'Тайвань', italy: 'Италия', turkey: 'Түркия', malaysia: 'Малайзия', china: 'Кытай', korea: 'Түштүк Корея'
       })
     },
     legal: {
@@ -296,12 +248,9 @@ export const locales = {
       titleHighlight: 'Талаптары',
       subtitle: 'Дүйнөнүн каалаган өлкөсүнө эшик ачкан стандарттар.',
       cards: [
-        { title: 'IELTS', desc: 'Англис тилдүү өлкөлөр үчүн эл аралык тил сынагы.', score: '6.0+ талап', img: '/ielts.png', format: 'Listening, Reading, Writing, Speaking' },
-        { title: 'TOEFL', desc: 'АКШ университеттери үчүн башкы англис тести.', score: '80+ талап', img: '/toefl.png', format: 'Reading, Listening, Speaking, Writing' },
-        { title: 'SAT', desc: 'АКШ жана Азия университеттери үчүн академиялык тест.', score: '1350+ талап', img: '/sat.png', format: 'Reading & Writing, Math' },
-        { title: 'HSK', desc: 'Кытай тилин билүү деңгээлин аныктаган сынак.', score: 'HSK 4+ талап', img: '/hsk.png', format: 'Listening, Reading, Writing' },
-        { title: 'TÖMER', desc: 'Түрк тилин билүү боюнча расмий сертификат.', score: 'B2+ талап', img: '/tomer.png', format: 'Reading, Writing, Speaking, Listening' },
-        { title: 'CSCA', desc: 'Кытайдын бакалавриатына жана өкмөттүк гранттарына кирүү сынагы.', score: '500+ талап', img: '/csca.png', format: 'Математика, Физика, Химия, Кытай тили' }
+        { title: 'IELTS', desc: 'Европа үчүн англис тили сынагы.', score: '7.0+ талап', img: '/ielts.jpg', format: 'Listening, Reading, Writing, Speaking' },
+        { title: 'TOEFL', desc: 'АКШ университеттери үчүн башкы тест.', score: '100+ талап', img: '/toefl.png', format: 'Reading, Listening, Speaking, Writing' },
+        { title: 'SAT', desc: 'АКШ коллеждери үчүн зарыл.', score: '1400+ талап', img: '/sat.jpg', format: 'Reading/Writing & Math' }
       ]
     },
     cases: {
@@ -364,10 +313,9 @@ export const locales = {
         scholarsTitle: 'Scholarships',
         unisTitle: 'Featured Top Universities:',
         contactCta: 'Plan my admission here',
-        presentationCta: 'View Presentation',
       },
-      countries: mapCountries(['taiwan', 'china', 'turkey', 'poland', 'malaysia', 'italy', 'austria', 'hungary', 'spain', 'czech', 'usa', 'germany', 'korea'], {
-        taiwan: 'Taiwan', china: 'China', turkey: 'Turkey', poland: 'Poland', malaysia: 'Malaysia', italy: 'Italy', austria: 'Austria', hungary: 'Hungary', spain: 'Spain', czech: 'Czechia', usa: 'USA', germany: 'Germany', korea: 'South Korea'
+      countries: mapCountries(['taiwan', 'italy', 'turkey', 'malaysia', 'china', 'korea'], {
+        taiwan: 'Taiwan', italy: 'Italy', turkey: 'Turkey', malaysia: 'Malaysia', china: 'China', korea: 'South Korea'
       })
     },
     legal: {
@@ -383,12 +331,9 @@ export const locales = {
       titleHighlight: 'Standards',
       subtitle: 'The universal metrics that open global doors.',
       cards: [
-        { title: 'IELTS', desc: 'International English test for study abroad.', score: 'Requires 6.0+', img: '/ielts.png', format: 'Listening, Reading, Writing, Speaking' },
-        { title: 'TOEFL', desc: 'Standard English test for US & global universities.', score: 'Requires 80+', img: '/toefl.png', format: 'Online iBT Format' },
-        { title: 'SAT', desc: 'Standardized academic assessment for US & Asian universities.', score: 'Requires 1350+', img: '/sat.png', format: 'Reading & Writing, Math' },
-        { title: 'HSK', desc: 'Chinese language proficiency test for China & Taiwan.', score: 'Requires HSK 4+', img: '/hsk.png', format: 'Listening, Reading, Writing' },
-        { title: 'TÖMER', desc: 'Official Turkish language certificate for study in Turkey.', score: 'Requires B1–B2', img: '/tomer.png', format: 'Reading, Writing, Speaking, Listening' },
-        { title: 'CSCA', desc: 'China Scholastic Competency Assessment for undergraduate admissions & scholarships.', score: 'Requires 500+', img: '/csca.png', format: 'Math, Physics, Chemistry, Chinese' }
+        { title: 'IELTS', desc: 'English proficiency for UK and EU.', score: 'Requires 7.0+', img: '/ielts.jpg', format: 'Listening, Reading, Writing, Speaking' },
+        { title: 'TOEFL', desc: 'US standard English test.', score: 'Requires 100+', img: '/toefl.png', format: 'Online iBT Format' },
+        { title: 'SAT', desc: 'Logic test for US colleges.', score: 'Requires 1400+', img: '/sat.jpg', format: 'Reading/Writing & Math' }
       ]
     },
     cases: {
