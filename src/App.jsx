@@ -410,7 +410,7 @@ function App() {
             <motion.div animate={{ rotate: 360 }} transition={{ duration: 20, repeat: Infinity, ease: 'linear' }} style={{ position: 'absolute', top: '10%', left: '10%', zIndex: 4 }}>
               <svg width="50" height="50" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="40" stroke="var(--primary)" strokeWidth="2" strokeDasharray="10 10" /></svg>
             </motion.div>
-            <div style={{ position: 'absolute', bottom: '15%', right: '0%', zIndex: 4, background: 'var(--secondary)', color: '#fff', padding: '0.8rem 1.25rem', borderRadius: '100px', fontWeight: 800, fontSize: '1.05rem', transform: 'rotate(-5deg)', boxShadow: '0 10px 20px rgba(255, 94, 51, 0.3)' }}>
+            <div className="hero-badge-float" style={{ position: 'absolute', bottom: '15%', right: '0%', zIndex: 4, background: 'var(--secondary)', color: '#fff', padding: '0.8rem 1.25rem', borderRadius: '100px', fontWeight: 800, fontSize: '1.05rem', transform: 'rotate(-5deg)', boxShadow: '0 10px 20px rgba(255, 94, 51, 0.3)' }}>
               100% SUCCESS
             </div>
           </div>
