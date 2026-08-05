@@ -45,6 +45,7 @@ function PresentationViewer({ presentation, countryName, onClose }) {
   const [isZoomed, setIsZoomed] = useState(false);
   const totalSlides = presentation.slides;
   const containerRef = useRef(null);
+  const touchStartX = useRef(null);
 
   const goNext = useCallback(() => {
     if (currentSlide < totalSlides) {
@@ -59,6 +60,21 @@ function PresentationViewer({ presentation, countryName, onClose }) {
       setIsLoading(true);
     }
   }, [currentSlide]);
+
+  const handleTouchStart = (e) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (e) => {
+    if (touchStartX.current === null) return;
+    const touchEndX = e.changedTouches[0].clientX;
+    const diffX = touchStartX.current - touchEndX;
+    if (Math.abs(diffX) > 40) {
+      if (diffX > 0) goNext();
+      else goPrev();
+    }
+    touchStartX.current = null;
+  };
 
   useEffect(() => {
     const handleKey = (e) => {
@@ -127,7 +143,11 @@ function PresentationViewer({ presentation, countryName, onClose }) {
         </div>
 
         {/* Slide Area */}
-        <div className={`pres-slide-area ${isZoomed ? 'pres-zoomed' : ''}`}>
+        <div
+          className={`pres-slide-area ${isZoomed ? 'pres-zoomed' : ''}`}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+        >
           {/* Prev Button */}
           <button
             onClick={goPrev}
@@ -204,42 +224,42 @@ function CountryModal({ country, modalT, contactT, onClose, onOpenPresentation }
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={e => e.stopPropagation()}>
-        <button onClick={onClose} style={{ position: 'absolute', top: '24px', right: '24px', background: 'var(--bg-alt)', color: 'var(--text-dark)', border: 'none', borderRadius: '50%', width: '40px', height: '40px', cursor: 'pointer', zIndex: 10, fontSize: '1.2rem', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'var(--transition)' }} onMouseEnter={e => e.currentTarget.style.background='var(--border-light)'} onMouseLeave={e => e.currentTarget.style.background='var(--bg-alt)'}>✕</button>
+        <button onClick={onClose} style={{ position: 'absolute', top: '20px', right: '20px', background: 'var(--bg-alt)', color: 'var(--text-dark)', border: 'none', borderRadius: '50%', width: '40px', height: '40px', cursor: 'pointer', zIndex: 10, fontSize: '1.2rem', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'var(--transition)' }} onMouseEnter={e => e.currentTarget.style.background='var(--border-light)'} onMouseLeave={e => e.currentTarget.style.background='var(--bg-alt)'}>✕</button>
         
-        <div style={{ position: 'relative', height: '240px', overflow: 'hidden', background: 'var(--bg-alt)' }}>
+        <div className="modal-header-img" style={{ position: 'relative', height: '240px', overflow: 'hidden', background: 'var(--bg-alt)' }}>
           {country.image.startsWith('bg') ? (
             <div className={country.image} style={{ width: '100%', height: '100%' }} />
           ) : (
             <img src={asset(country.image)} alt={country.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => { e.target.src = asset('/harvard.jpg'); }} />
           )}
           <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(10,17,40,0.8) 0%, transparent 100%)' }} />
-          <div style={{ position: 'absolute', bottom: '20px', left: '32px' }}>
+          <div style={{ position: 'absolute', bottom: '20px', left: '24px', right: '24px' }}>
             <span className="tag-outline" style={{ color: '#fff', borderColor: '#fff', marginBottom: '10px' }}>Destination</span>
-            <h2 style={{ fontSize: '3rem', fontWeight: 800, color: '#fff' }}>{country.name}</h2>
+            <h2 className="modal-title" style={{ fontSize: '3rem', fontWeight: 800, color: '#fff', lineHeight: 1.1 }}>{country.name}</h2>
           </div>
         </div>
 
-        <div style={{ padding: '32px' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '32px' }}>
-            <div style={{ background: 'var(--bg-alt)', padding: '24px', borderRadius: 'var(--radius-lg)' }}>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px' }}>{modalT.tuitionTitle}</p>
-              <p style={{ fontSize: '1.3rem', fontWeight: 700, color: 'var(--text-dark)' }}>{country.tuition}</p>
+        <div className="modal-body" style={{ padding: '32px' }}>
+          <div className="modal-stats-grid">
+            <div style={{ background: 'var(--bg-alt)', padding: '20px', borderRadius: 'var(--radius-lg)' }}>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '6px' }}>{modalT.tuitionTitle}</p>
+              <p style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--text-dark)' }}>{country.tuition}</p>
             </div>
-            <div style={{ background: 'var(--bg-alt)', padding: '24px', borderRadius: 'var(--radius-lg)' }}>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px' }}>{modalT.livingTitle}</p>
-              <p style={{ fontSize: '1.3rem', fontWeight: 700, color: 'var(--text-dark)' }}>{country.living}</p>
+            <div style={{ background: 'var(--bg-alt)', padding: '20px', borderRadius: 'var(--radius-lg)' }}>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '6px' }}>{modalT.livingTitle}</p>
+              <p style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--text-dark)' }}>{country.living}</p>
             </div>
-            <div style={{ gridColumn: 'span 2', background: 'var(--primary)', padding: '24px', borderRadius: 'var(--radius-lg)', color: '#fff' }}>
-              <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px' }}>{modalT.scholarsTitle}</p>
-              <p style={{ fontSize: '1.2rem', fontWeight: 600 }}>{country.scholarships}</p>
+            <div style={{ gridColumn: '1 / -1', background: 'var(--primary)', padding: '20px', borderRadius: 'var(--radius-lg)', color: '#fff' }}>
+              <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '6px' }}>{modalT.scholarsTitle}</p>
+              <p style={{ fontSize: '1.1rem', fontWeight: 600, lineHeight: 1.4 }}>{country.scholarships}</p>
             </div>
           </div>
 
-          <h3 style={{ fontSize: '1.3rem', fontWeight: 800, marginBottom: '16px' }}>{modalT.unisTitle}</h3>
-          <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '40px' }}>
+          <h3 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '16px' }}>{modalT.unisTitle}</h3>
+          <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '32px' }}>
             {country.topUnis.map((u, i) => (
-              <li key={i} style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '1.1rem', color: 'var(--text-muted)', fontWeight: 500 }}>
-                <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--primary)' }} /> {u}
+              <li key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '1.05rem', color: 'var(--text-muted)', fontWeight: 500 }}>
+                <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--primary)', flexShrink: 0 }} /> {u}
               </li>
             ))}
           </ul>
@@ -248,12 +268,12 @@ function CountryModal({ country, modalT, contactT, onClose, onOpenPresentation }
             <button
               onClick={() => onOpenPresentation(country)}
               className="btn-secondary"
-              style={{ width: '100%', padding: '1.2rem', marginBottom: '16px', justifyContent: 'center', border: '2px solid var(--primary)', color: 'var(--primary)', background: 'rgba(51, 84, 255, 0.05)', cursor: 'pointer' }}
+              style={{ width: '100%', padding: '1.1rem', marginBottom: '12px', justifyContent: 'center', border: '2px solid var(--primary)', color: 'var(--primary)', background: 'rgba(51, 84, 255, 0.05)', cursor: 'pointer' }}
             >
               {modalT.presentationCta} <span style={{ fontSize: '1.2rem' }}>📑</span>
             </button>
           )}
-          <a href={`https://wa.me/996709694959?text=Здравствуйте! Интересует обучение в стране: ${country.name}`} target="_blank" rel="noreferrer" className="btn-primary" style={{ width: '100%', padding: '1.2rem' }}>
+          <a href={`https://wa.me/996709694959?text=Здравствуйте! Интересует обучение в стране: ${country.name}`} target="_blank" rel="noreferrer" className="btn-primary" style={{ width: '100%', padding: '1.1rem' }}>
             {modalT.contactCta} <span style={{ fontSize: '1.2rem' }}>💬</span>
           </a>
         </div>
@@ -266,10 +286,10 @@ function PrivacyModal({ title, text, onClose }) {
   if (!text) return null;
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={e => e.stopPropagation()} style={{ padding: '40px' }}>
-        <button onClick={onClose} style={{ position: 'absolute', top: '24px', right: '24px', background: 'var(--bg-alt)', color: 'var(--text-dark)', border: 'none', borderRadius: '50%', width: '40px', height: '40px', cursor: 'pointer', zIndex: 10, fontSize: '1.2rem' }}>✕</button>
-        <h2 style={{ fontSize: '2.4rem', fontWeight: 800, marginBottom: '24px', paddingRight: '40px' }}>{title}</h2>
-        <div style={{ color: 'var(--text-muted)', lineHeight: 1.8, fontSize: '1.05rem', whiteSpace: 'pre-wrap' }}>
+      <div className="modal-content" onClick={e => e.stopPropagation()} style={{ padding: '32px' }}>
+        <button onClick={onClose} style={{ position: 'absolute', top: '20px', right: '20px', background: 'var(--bg-alt)', color: 'var(--text-dark)', border: 'none', borderRadius: '50%', width: '40px', height: '40px', cursor: 'pointer', zIndex: 10, fontSize: '1.2rem' }}>✕</button>
+        <h2 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '20px', paddingRight: '40px' }}>{title}</h2>
+        <div style={{ color: 'var(--text-muted)', lineHeight: 1.8, fontSize: '1rem', whiteSpace: 'pre-wrap' }}>
           {text}
         </div>
       </div>
@@ -325,9 +345,9 @@ function App() {
       )}
 
       {/* =========== NAV =========== */}
-      <nav className={scrolled ? 'header-scrolled' : ''} style={{ position: 'fixed', top: 0, left: 0, right: 0, padding: scrolled ? '1rem 4rem' : '1.5rem 4rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 100, transition: 'all 0.4s ease' }}>
+      <nav className={`main-nav ${scrolled ? 'header-scrolled' : ''}`}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }} onClick={() => window.scrollTo(0,0)}>
-          <img src={asset('/logo.png')} alt="Logo" style={{ height: '70px', objectFit: 'contain' }} onError={(e) => { e.target.style.display='none'; }} />
+          <img src={asset('/logo.png')} alt="Logo" className="nav-logo" style={{ height: '65px', objectFit: 'contain' }} onError={(e) => { e.target.style.display='none'; }} />
         </div>
         <div style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
           <div style={{ display: 'flex', gap: '0.5rem' }}>
@@ -340,27 +360,27 @@ function App() {
       </nav>
 
       {/* =========== HERO (DIGIBIZ SPLIT) =========== */}
-      <section style={{ paddingTop: '8rem', paddingBottom: '4rem', paddingLeft: '4rem', paddingRight: '4rem', minHeight: '100vh', display: 'flex', alignItems: 'center', position: 'relative', overflow: 'hidden' }}>
+      <section className="hero-section">
         
         {/* Abstract Background Shapes */}
         <div style={{ position: 'absolute', top: '-10%', right: '-5%', width: '600px', height: '600px', background: 'var(--bg-alt)', borderRadius: '50%', zIndex: -1 }} />
         <div style={{ position: 'absolute', bottom: '10%', left: '-5%', width: '300px', height: '300px', background: 'rgba(51, 84, 255, 0.05)', borderRadius: '50%', zIndex: -1 }} />
 
-        <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4rem', alignItems: 'center', width: '100%' }}>
+        <div className="hero-grid" style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gap: '3rem', alignItems: 'center', width: '100%' }}>
           
           {/* Left Text */}
           <div>
             <Reveal delay={0.2} direction="right">
-              <div className="tag-outline" style={{ marginBottom: '2rem' }}>✨ {t.hero.badge}</div>
+              <div className="tag-outline" style={{ marginBottom: '1.5rem' }}>✨ {t.hero.badge}</div>
             </Reveal>
             <Reveal delay={0.4} direction="right">
-              <h1 style={{ fontSize: '5.5rem', lineHeight: 1.05, fontWeight: 900, marginBottom: '1.5rem' }}>
+              <h1 className="hero-h1">
                 {t.hero.title} <br/>
                 <span style={{ color: 'var(--primary)' }}>{t.hero.country}</span>
               </h1>
             </Reveal>
             <Reveal delay={0.6} direction="right">
-              <p style={{ fontSize: '1.25rem', lineHeight: 1.6, color: 'var(--text-muted)', marginBottom: '3rem', maxWidth: '480px' }}>
+              <p style={{ fontSize: '1.2rem', lineHeight: 1.6, color: 'var(--text-muted)', marginBottom: '2.5rem', maxWidth: '480px' }}>
                 {t.hero.subtitle}
               </p>
             </Reveal>
@@ -374,23 +394,23 @@ function App() {
           </div>
 
           {/* Right Floating Arch Images */}
-          <div style={{ position: 'relative', height: '600px' }}>
+          <div className="hero-images-wrapper">
             <Reveal delay={0.4} direction="left" style={{ position: 'absolute', top: 0, right: 0, width: '65%', height: '80%', zIndex: 2 }}>
-              <div className="shape-float" style={{ width: '100%', height: '100%', borderRadius: 'var(--radius-arch)', overflow: 'hidden', border: '10px solid var(--bg-main)', boxShadow: 'var(--shadow-soft)' }}>
+              <div className="shape-float" style={{ width: '100%', height: '100%', borderRadius: 'var(--radius-arch)', overflow: 'hidden', border: '8px solid var(--bg-main)', boxShadow: 'var(--shadow-soft)' }}>
                 <img src={asset('/taiwan.jpg')} alt="Taiwan" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={e => e.target.src=asset('/harvard.jpg')} />
               </div>
             </Reveal>
             <Reveal delay={0.6} direction="up" style={{ position: 'absolute', bottom: 0, left: 0, width: '55%', height: '60%', zIndex: 3 }}>
-              <div className="shape-float-delay" style={{ width: '100%', height: '100%', borderRadius: 'var(--radius-arch)', overflow: 'hidden', border: '10px solid var(--bg-main)', boxShadow: 'var(--shadow-soft)' }}>
+              <div className="shape-float-delay" style={{ width: '100%', height: '100%', borderRadius: 'var(--radius-arch)', overflow: 'hidden', border: '8px solid var(--bg-main)', boxShadow: 'var(--shadow-soft)' }}>
                 <img src={asset('/italy.jpg')} alt="Italy" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={e => e.target.src=asset('/oxford.jpg')} />
               </div>
             </Reveal>
             
             {/* Playful elements */}
             <motion.div animate={{ rotate: 360 }} transition={{ duration: 20, repeat: Infinity, ease: 'linear' }} style={{ position: 'absolute', top: '10%', left: '10%', zIndex: 4 }}>
-              <svg width="60" height="60" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="40" stroke="var(--primary)" strokeWidth="2" strokeDasharray="10 10" /></svg>
+              <svg width="50" height="50" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="40" stroke="var(--primary)" strokeWidth="2" strokeDasharray="10 10" /></svg>
             </motion.div>
-            <div style={{ position: 'absolute', bottom: '20%', right: '-5%', zIndex: 4, background: 'var(--secondary)', color: '#fff', padding: '1rem 1.5rem', borderRadius: '100px', fontWeight: 800, fontSize: '1.2rem', transform: 'rotate(-5deg)', boxShadow: '0 10px 20px rgba(255, 94, 51, 0.3)' }}>
+            <div style={{ position: 'absolute', bottom: '15%', right: '0%', zIndex: 4, background: 'var(--secondary)', color: '#fff', padding: '0.8rem 1.25rem', borderRadius: '100px', fontWeight: 800, fontSize: '1.05rem', transform: 'rotate(-5deg)', boxShadow: '0 10px 20px rgba(255, 94, 51, 0.3)' }}>
               100% SUCCESS
             </div>
           </div>
@@ -398,26 +418,26 @@ function App() {
       </section>
 
       {/* =========== ABOUT (DIGIBIZ CARDS) =========== */}
-      <section id="about" style={{ padding: '8rem 4rem', background: 'var(--bg-alt)', position: 'relative' }}>
+      <section className="section-block" id="about" style={{ background: 'var(--bg-alt)', position: 'relative' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
+          <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
             <Reveal>
               <span className="tag-outline" style={{ marginBottom: '1.5rem' }}>{t.nav.about}</span>
-              <h2 style={{ fontSize: '3.5rem', fontWeight: 900, marginBottom: '1.5rem', maxWidth: '800px', margin: '0 auto' }}>
+              <h2 className="section-h2" style={{ marginBottom: '1.5rem', maxWidth: '800px', margin: '0 auto' }}>
                 {t.about.title} <span style={{ color: 'var(--primary)' }}>{t.about.titleHighlight}</span>
               </h2>
-              <p style={{ fontSize: '1.2rem', color: 'var(--text-muted)', maxWidth: '600px', margin: '0 auto' }}>{t.about.desc}</p>
+              <p style={{ fontSize: '1.15rem', color: 'var(--text-muted)', maxWidth: '600px', margin: '0 auto' }}>{t.about.desc}</p>
             </Reveal>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '2rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem' }}>
             {t.about.principles.map((principle, i) => (
               <Reveal key={i} delay={i * 0.2}>
-                <div style={{ background: 'var(--bg-card)', padding: '3rem 2.5rem', borderRadius: 'var(--radius-xl)', boxShadow: 'var(--shadow-soft)', height: '100%', transition: 'var(--transition)' }} onMouseEnter={e => e.currentTarget.style.transform='translateY(-10px)'} onMouseLeave={e => e.currentTarget.style.transform='translateY(0)'}>
-                  <div className="icon-circle" style={{ width: '64px', height: '64px', fontSize: '1.8rem', marginBottom: '2rem', background: 'rgba(51, 84, 255, 0.1)' }}>
+                <div style={{ background: 'var(--bg-card)', padding: '2.5rem 2rem', borderRadius: 'var(--radius-xl)', boxShadow: 'var(--shadow-soft)', height: '100%', transition: 'var(--transition)' }} onMouseEnter={e => e.currentTarget.style.transform='translateY(-10px)'} onMouseLeave={e => e.currentTarget.style.transform='translateY(0)'}>
+                  <div className="icon-circle" style={{ width: '60px', height: '60px', fontSize: '1.75rem', marginBottom: '1.5rem', background: 'rgba(51, 84, 255, 0.1)' }}>
                     {i === 0 ? '🎯' : i === 1 ? '📈' : '🤝'}
                   </div>
-                  <h3 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '1rem' }}>{principle}</h3>
+                  <h3 style={{ fontSize: '1.4rem', fontWeight: 800, marginBottom: '1rem' }}>{principle}</h3>
                   <p style={{ color: 'var(--text-muted)', lineHeight: 1.6 }}>{t.about.features[i] || t.about.features[3]}</p>
                 </div>
               </Reveal>
@@ -427,17 +447,17 @@ function App() {
       </section>
 
       {/* =========== DESTINATIONS (ARCH CARDS) =========== */}
-      <section id="destinations" style={{ padding: '8rem 4rem', background: 'var(--bg-main)' }}>
+      <section className="section-block" id="destinations" style={{ background: 'var(--bg-main)' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '4rem', flexWrap: 'wrap', gap: '2rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '3.5rem', flexWrap: 'wrap', gap: '1.5rem' }}>
             <div>
               <Reveal>
                 <span className="tag-outline" style={{ marginBottom: '1rem' }}>{t.nav.destinations}</span>
-                <h2 style={{ fontSize: '4rem', fontWeight: 900 }}>{t.destinations.title} <span style={{ color: 'var(--primary)' }}>{t.destinations.titleHighlight}</span></h2>
+                <h2 className="section-h2">{t.destinations.title} <span style={{ color: 'var(--primary)' }}>{t.destinations.titleHighlight}</span></h2>
               </Reveal>
             </div>
             <Reveal delay={0.2}>
-              <p style={{ color: 'var(--text-muted)', fontSize: '1.2rem', maxWidth: '400px' }}>{t.destinations.subtitle}</p>
+              <p style={{ color: 'var(--text-muted)', fontSize: '1.15rem', maxWidth: '400px' }}>{t.destinations.subtitle}</p>
             </Reveal>
           </div>
 
@@ -511,37 +531,37 @@ function App() {
       </section>
 
       {/* =========== EXAMS =========== */}
-      <section id="exams" style={{ padding: '8rem 4rem', background: 'var(--bg-alt)' }}>
+      <section className="section-block" id="exams" style={{ background: 'var(--bg-alt)' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <Reveal>
-            <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
+            <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
               <span className="tag-outline" style={{ marginBottom: '1rem' }}>{t.nav.exams}</span>
-              <h2 style={{ fontSize: '4rem', fontWeight: 900 }}>{t.exams.title} <span style={{ color: 'var(--primary)' }}>{t.exams.titleHighlight}</span></h2>
+              <h2 className="section-h2">{t.exams.title} <span style={{ color: 'var(--primary)' }}>{t.exams.titleHighlight}</span></h2>
             </div>
           </Reveal>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem' }}>
             {t.exams.cards.map((exam, i) => (
               <Reveal key={exam.title} delay={i * 0.15}>
-                <div style={{ background: 'var(--bg-card)', borderRadius: 'var(--radius-xl)', padding: '2.5rem', boxShadow: 'var(--shadow-soft)', position: 'relative', overflow: 'hidden', border: '1px solid var(--border-light)', display: 'flex', flexDirection: 'column', height: '100%', transition: 'var(--transition)' }} onMouseEnter={e => e.currentTarget.style.transform='translateY(-6px)'} onMouseLeave={e => e.currentTarget.style.transform='translateY(0)'}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem' }}>
-                    <div style={{ width: '70px', height: '70px', borderRadius: '18px', background: 'var(--bg-alt)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', padding: '10px', border: '1px solid var(--border-light)' }}>
+                <div style={{ background: 'var(--bg-card)', borderRadius: 'var(--radius-xl)', padding: '2rem 1.75rem', boxShadow: 'var(--shadow-soft)', position: 'relative', overflow: 'hidden', border: '1px solid var(--border-light)', display: 'flex', flexDirection: 'column', height: '100%', transition: 'var(--transition)' }} onMouseEnter={e => e.currentTarget.style.transform='translateY(-6px)'} onMouseLeave={e => e.currentTarget.style.transform='translateY(0)'}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.25rem' }}>
+                    <div style={{ width: '64px', height: '64px', borderRadius: '16px', background: 'var(--bg-alt)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', padding: '8px', border: '1px solid var(--border-light)' }}>
                       <img src={asset(exam.img)} alt={exam.title} style={{ width: '100%', height: '100%', objectFit: 'contain' }} onError={e => { e.target.style.display='none'; }} />
                     </div>
-                    <span style={{ background: 'rgba(51, 84, 255, 0.08)', color: 'var(--primary)', fontWeight: 800, padding: '0.4rem 1rem', borderRadius: '100px', fontSize: '0.9rem', letterSpacing: '0.5px' }}>
+                    <span style={{ background: 'rgba(51, 84, 255, 0.08)', color: 'var(--primary)', fontWeight: 800, padding: '0.35rem 0.9rem', borderRadius: '100px', fontSize: '0.85rem', letterSpacing: '0.5px' }}>
                       {exam.score}
                     </span>
                   </div>
 
-                  <h3 style={{ fontSize: '2.2rem', fontWeight: 900, marginBottom: '0.75rem' }}>{exam.title}</h3>
-                  <p style={{ color: 'var(--text-muted)', fontSize: '1.05rem', lineHeight: 1.6, marginBottom: '1.5rem', flex: 1 }}>{exam.desc}</p>
+                  <h3 style={{ fontSize: '1.8rem', fontWeight: 900, marginBottom: '0.75rem' }}>{exam.title}</h3>
+                  <p style={{ color: 'var(--text-muted)', fontSize: '1rem', lineHeight: 1.6, marginBottom: '1.25rem', flex: 1 }}>{exam.desc}</p>
                   
                   {exam.format && (
-                    <div style={{ paddingTop: '1.25rem', borderTop: '1px solid var(--border-light)' }}>
-                      <p style={{ fontSize: '0.75rem', color: 'var(--text-light)', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 700, marginBottom: '0.4rem' }}>
+                    <div style={{ paddingTop: '1rem', borderTop: '1px solid var(--border-light)' }}>
+                      <p style={{ fontSize: '0.75rem', color: 'var(--text-light)', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 700, marginBottom: '0.3rem' }}>
                         Формат / Разделы
                       </p>
-                      <p style={{ fontSize: '0.95rem', color: 'var(--text-dark)', fontWeight: 600 }}>
+                      <p style={{ fontSize: '0.9rem', color: 'var(--text-dark)', fontWeight: 600 }}>
                         {exam.format}
                       </p>
                     </div>
@@ -554,23 +574,23 @@ function App() {
       </section>
 
       {/* =========== CTA SECTION (DIGIBIZ SOLID BLOCK) =========== */}
-      <section style={{ padding: '6rem 4rem', background: 'var(--primary)', textAlign: 'center' }}>
+      <section className="section-block" style={{ background: 'var(--primary)', textAlign: 'center' }}>
         <Reveal>
-          <h2 style={{ fontSize: '3.5rem', fontWeight: 900, color: '#fff', marginBottom: '1.5rem' }}>Ready to conquer the world?</h2>
-          <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: '1.3rem', maxWidth: '600px', margin: '0 auto 3rem' }}>{t.footer.desc}</p>
-          <a href="https://wa.me/996709694959" target="_blank" rel="noreferrer" className="btn-primary" style={{ background: '#fff', color: 'var(--primary)', padding: '1.2rem 4rem', fontSize: '1.2rem' }}>
+          <h2 className="section-h2" style={{ color: '#fff', marginBottom: '1.5rem' }}>Ready to conquer the world?</h2>
+          <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: '1.2rem', maxWidth: '600px', margin: '0 auto 2.5rem' }}>{t.footer.desc}</p>
+          <a href="https://wa.me/996709694959" target="_blank" rel="noreferrer" className="btn-primary" style={{ background: '#fff', color: 'var(--primary)', padding: '1.1rem 3.5rem', fontSize: '1.15rem' }}>
             {t.whatsAppText.contactUs} 💬
           </a>
         </Reveal>
       </section>
 
       {/* =========== FOOTER =========== */}
-      <footer style={{ background: 'var(--text-dark)', padding: '6rem 4rem 3rem', color: '#fff' }}>
+      <footer className="section-block" style={{ background: 'var(--text-dark)', color: '#fff', paddingBottom: '3rem' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <div className="display-grid" style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr', gap: '4rem', marginBottom: '4rem' }}>
+          <div className="display-grid" style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr', gap: '3rem', marginBottom: '3.5rem' }}>
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '2rem' }}>
-                <img src={asset('/logo.png')} alt="Logo" style={{ height: '100px', objectFit: 'contain', filter: 'brightness(0) invert(1)' }} onError={e => e.target.style.display='none'} />
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '1.5rem' }}>
+                <img src={asset('/logo.png')} alt="Logo" style={{ height: '80px', objectFit: 'contain', filter: 'brightness(0) invert(1)' }} onError={e => e.target.style.display='none'} />
               </div>
               <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '1.05rem', lineHeight: 1.7, maxWidth: '400px', marginBottom: '2rem' }}>{t.footer.desc}</p>
               

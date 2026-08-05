@@ -562,32 +562,128 @@ h1, h2, h3, h4, h5 {
   text-shadow: 0 1px 3px rgba(0,0,0,0.8);
 }
 
+/* ================= RESPONSIVE CLASSES & UTILITIES ================= */
+.main-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 1.5rem 4rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 100;
+  transition: all 0.4s ease;
+}
+.main-nav.header-scrolled {
+  padding: 1rem 4rem !important;
+}
+
+.hero-section {
+  padding: 8rem 4rem 4rem;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.section-block {
+  padding: 8rem 4rem;
+}
+
+.hero-h1 {
+  font-size: 5.5rem;
+  line-height: 1.05;
+  font-weight: 900;
+  margin-bottom: 1.5rem;
+}
+
+.section-h2 {
+  font-size: 4rem;
+  font-weight: 900;
+}
+
+.hero-images-wrapper {
+  position: relative;
+  height: 600px;
+}
+
 /* ================= MOBILE RESPONSIVE ================= */
+@media (max-width: 1024px) {
+  .hero-h1 {
+    font-size: 4.2rem;
+  }
+  .section-h2 {
+    font-size: 3.2rem;
+  }
+}
+
 @media (max-width: 900px) {
   html {
-    font-size: 14px;
+    font-size: 15px;
   }
   
-  /* Make Nav stacked or hidden except Logo & Lang */
+  .main-nav, .main-nav.header-scrolled {
+    padding: 0.85rem 1.25rem !important;
+  }
+
+  .nav-logo {
+    height: 50px !important;
+  }
+
   .nav-link {
     display: none;
   }
 
-  /* Grid Layout Fixes */
-  section > div {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 2rem !important;
+  .hero-section {
+    padding: 6.5rem 1.25rem 3rem !important;
+    min-height: auto !important;
   }
 
-  .arch-card, .btn-primary, .btn-secondary {
+  .hero-h1 {
+    font-size: 3.2rem !important;
+    line-height: 1.12 !important;
+    margin-bottom: 1rem !important;
+  }
+
+  .section-block {
+    padding: 4rem 1.25rem !important;
+  }
+
+  .section-h2 {
+    font-size: 2.4rem !important;
+  }
+
+  .hero-images-wrapper {
+    height: 380px !important;
+    margin-top: 1rem;
+  }
+
+  .arch-card {
+    height: 440px !important;
     width: 100% !important;
   }
 
-  /* Footer stacking */
+  .btn-primary, .btn-secondary {
+    width: 100% !important;
+  }
+
   footer .display-grid {
     grid-template-columns: 1fr !important;
-    gap: 2rem !important;
+    gap: 2.5rem !important;
+  }
+
+  .whatsapp-float {
+    bottom: 24px !important;
+    right: 24px !important;
+    width: 56px !important;
+    height: 56px !important;
+  }
+
+  .whatsapp-float svg {
+    width: 28px !important;
+    height: 28px !important;
   }
 
   /* Presentation Viewer Mobile */
@@ -605,13 +701,13 @@ h1, h2, h3, h4, h5 {
   }
 
   .pres-nav-btn {
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
   }
 
   .pres-nav-btn svg {
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
   }
 
   .pres-thumb {
@@ -623,4 +719,53 @@ h1, h2, h3, h4, h5 {
     padding: 8px 12px;
   }
 }
+
+@media (max-width: 550px) {
+  html {
+    font-size: 14px;
+  }
+
+  .hero-section {
+    padding: 5.5rem 1rem 2rem !important;
+  }
+
+  .hero-h1 {
+    font-size: 2.4rem !important;
+  }
+
+  .section-block {
+    padding: 3rem 1rem !important;
+  }
+
+  .section-h2 {
+    font-size: 2rem !important;
+  }
+
+  .hero-images-wrapper {
+    height: 320px !important;
+  }
+
+  .btn-primary, .btn-secondary {
+    padding: 0.95rem 2rem !important;
+    font-size: 1rem !important;
+  }
+
+  .arch-card {
+    height: 400px !important;
+    border-radius: 120px 120px 24px 24px !important;
+  }
+
+  .arch-img-wrap {
+    border-radius: 100px 100px 16px 16px !important;
+  }
+
+  .modal-overlay {
+    padding: 0.75rem !important;
+  }
+
+  .modal-content {
+    border-radius: 24px !important;
+  }
+}
+
 
