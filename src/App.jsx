@@ -10,6 +10,77 @@ function asset(path) {
   return `${BASE_URL}${cleanPath}`;
 }
 
+const revealOffsets = {
+  up: { x: 0, y: 36 },
+  down: { x: 0, y: -36 },
+  left: { x: 36, y: 0 },
+  right: { x: -36, y: 0 },
+};
+
+function Reveal({ children, delay = 0, direction = 'up', style }) {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: '-80px' });
+  const offset = revealOffsets[direction] || revealOffsets.up;
+
+  return (
+    <motion.div
+      ref={ref}
+      style={style}
+      initial={{ opacity: 0, ...offset }}
+      animate={isInView ? { opacity: 1, x: 0, y: 0 } : undefined}
+      transition={{ duration: 0.7, delay, ease: [0.16, 1, 0.3, 1] }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+function LangSwitcher({ lang, setLang }) {
+  return (
+    <div
+      aria-label="Language"
+      role="group"
+      style={{
+        display: 'flex',
+        gap: '4px',
+        padding: '4px',
+        border: '1px solid var(--border-light)',
+        borderRadius: 'var(--radius-full)',
+        background: 'rgba(244, 247, 251, 0.92)',
+      }}
+    >
+      {['ru', 'ky', 'en'].map((code) => {
+        const isActive = lang === code;
+        return (
+          <button
+            key={code}
+            type="button"
+            aria-pressed={isActive}
+            onClick={() => setLang(code)}
+            style={{
+              minWidth: '44px',
+              padding: '0.55rem 0.8rem',
+              border: 0,
+              borderRadius: 'var(--radius-full)',
+              color: isActive ? '#fff' : 'var(--text-muted)',
+              background: isActive ? 'var(--primary)' : 'transparent',
+              fontFamily: 'Plus Jakarta Sans, sans-serif',
+              fontSize: '0.78rem',
+              fontWeight: 800,
+              textTransform: 'uppercase',
+              cursor: 'pointer',
+              boxShadow: isActive ? '0 6px 14px var(--primary-glow)' : 'none',
+              transition: 'var(--transition)',
+            }}
+          >
+            {code}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 // ================= PRESENTATION VIEWER =================
 function PresentationViewer({ presentation, countryName, onClose }) {
   const [currentSlide, setCurrentSlide] = useState(1);
