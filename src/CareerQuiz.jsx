@@ -13,11 +13,12 @@ function ArrowIcon({ direction = 'right' }) {
   );
 }
 
-export default function CareerQuiz({ lang, copy }) {
+export default function CareerQuiz({ lang, copy, onComplete }) {
   const [screen, setScreen] = useState('intro');
   const [current, setCurrent] = useState(0);
   const [answers, setAnswers] = useState({});
   const [showError, setShowError] = useState(false);
+  const [saveState, setSaveState] = useState('idle');
   const quizRef = useRef(null);
   const t = copy.quiz;
   const profiles = riasec[lang];
@@ -62,6 +63,10 @@ export default function CareerQuiz({ lang, copy }) {
     }
     if (current === questions.length - 1) {
       setScreen('result');
+      setSaveState('saving');
+      Promise.resolve(onComplete?.(scores))
+        .then(() => setSaveState('saved'))
+        .catch(() => setSaveState('error'));
       scrollToQuiz();
       return;
     }
@@ -254,6 +259,9 @@ export default function CareerQuiz({ lang, copy }) {
                   </section>
 
                   <p className="quiz-disclaimer">{t.disclaimer}</p>
+                  {saveState === 'saving' && <p className="result-save-note" role="status">{lang === 'ky' ? 'Жыйынтык сакталууда…' : lang === 'ru' ? 'Сохраняем результат…' : 'Saving your result…'}</p>}
+                  {saveState === 'saved' && <p className="result-save-note" role="status">{lang === 'ky' ? 'Жыйынтык кеңешчиге жөнөтүлдү.' : lang === 'ru' ? 'Результат передан консультанту.' : 'Your result was sent to an adviser.'}</p>}
+                  {saveState === 'error' && <p className="result-save-note result-save-note--error" role="alert">{lang === 'ky' ? 'Жыйынтык сакталган жок. Кайра аракет кыл.' : lang === 'ru' ? 'Результат не сохранился. Попробуй ещё раз.' : 'The result could not be saved. Try again.'} <button type="button" onClick={() => { setSaveState('saving'); Promise.resolve(onComplete?.(scores)).then(() => setSaveState('saved')).catch(() => setSaveState('error')); }}>{lang === 'ky' ? 'Кайталоо' : lang === 'ru' ? 'Повторить' : 'Retry'}</button></p>}
                   <div className="result-actions">
                     <button type="button" className="text-button" onClick={restart}>{t.retake}</button>
                     <button type="button" className="button button--outline" onClick={() => window.print()}>{t.print}</button>

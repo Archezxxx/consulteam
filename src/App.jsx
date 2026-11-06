@@ -1,7 +1,10 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { AnimatePresence, motion, useInView } from 'framer-motion';
+import { lazy, Suspense, useCallback, useEffect, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import CareerQuiz from './CareerQuiz';
+import TestGate, { saveProffTestResult } from './TestGate';
 import { content, countries, riasec, TYPE_ORDER, typePalette } from './content';
+
+const CareerScene = lazy(() => import('./CareerScene'));
 
 const BASE_URL = import.meta.env.BASE_URL || '/';
 const WHATSAPP = '996709694959';
@@ -21,27 +24,15 @@ function CloseIcon() {
 
 function Brand({ inverse = false }) {
   return (
-    <a className={`brand${inverse ? ' brand--inverse' : ''}`} href="#top" aria-label="Consulteam — home">
+    <a className={`brand${inverse ? ' brand--inverse' : ''}`} href="/" aria-label="Consulteam — home">
       <span className="brand-mark" aria-hidden="true"><img src={asset('/favicon.svg')} alt="" /></span>
       <span>Consulteam</span>
     </a>
   );
 }
 
-function Reveal({ children, className = '', delay = 0 }) {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: '-10% 0px' });
-  return (
-    <motion.div
-      ref={ref}
-      className={className}
-      initial={{ opacity: 0, y: 24 }}
-      animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
-      transition={{ duration: 0.7, delay, ease: [0.16, 1, 0.3, 1] }}
-    >
-      {children}
-    </motion.div>
-  );
+function Reveal({ children, className = '' }) {
+  return <div className={className}>{children}</div>;
 }
 
 function LanguageSwitcher({ lang, onChange }) {
@@ -59,17 +50,18 @@ function LanguageSwitcher({ lang, onChange }) {
 function Header({ lang, setLang, copy }) {
   const [open, setOpen] = useState(false);
   const links = [
-    ['#quiz', copy.nav.quiz],
-    ['#types', copy.nav.approach],
-    ['#destinations', copy.nav.destinations],
-    ['#exams', copy.nav.exams],
+    ['/test', copy.nav.quiz],
+    ['/how-it-works', copy.nav.approach],
+    ['/types', lang === 'ky' ? 'Типтер' : lang === 'ru' ? 'Типы' : 'Types'],
+    ['/countries', copy.nav.destinations],
+    ['/exams', copy.nav.exams],
   ];
 
   return (
     <header className="site-header">
       <Brand />
       <nav className="desktop-nav" aria-label="Main navigation">
-        {links.map(([href, label]) => <a key={href} href={href}>{label}</a>)}
+        {links.map(([href, label]) => <a key={href} href={href} aria-current={window.location.pathname === href ? 'page' : undefined}>{label}</a>)}
       </nav>
       <div className="header-actions">
         <LanguageSwitcher lang={lang} onChange={setLang} />
@@ -105,15 +97,23 @@ function RiasecShape({ lang }) {
 }
 
 function Hero({ lang, copy }) {
+  const hasWebGL = (() => {
+    try {
+      const canvas = document.createElement('canvas');
+      return Boolean(canvas.getContext('webgl2') || canvas.getContext('webgl'));
+    } catch {
+      return false;
+    }
+  })();
   return (
     <section id="top" className="hero chapter chapter--yellow">
       <div className="hero-copy">
         <h1>{copy.hero.title}</h1>
         <p className="hero-lead">{copy.hero.lead}</p>
-        <a className="button button--black hero-cta-desktop" href="#quiz">{copy.hero.primary}<Arrow /></a>
+        <a className="button button--black hero-cta-desktop" href="/test">{copy.hero.primary}<Arrow /></a>
       </div>
-      <div className="hero-shape-wrap"><RiasecShape lang={lang} /></div>
-      <a className="button button--black hero-cta-mobile" href="#quiz">{copy.hero.primary}<Arrow /></a>
+      <div className="hero-shape-wrap">{hasWebGL ? <Suspense fallback={<RiasecShape lang={lang} />}><CareerScene /></Suspense> : <RiasecShape lang={lang} />}</div>
+      <a className="button button--black hero-cta-mobile" href="/test">{copy.hero.primary}<Arrow /></a>
     </section>
   );
 }
@@ -302,11 +302,32 @@ function Footer({ copy, onPrivacy }) {
   );
 }
 
+const pageTitles = {
+  ru: { route: 'Как мы помогаем', types: 'Найди свой тип', countries: 'Страны и возможности', exams: 'Подготовка к экзаменам', test: 'Профориентационный тест' },
+  ky: { route: 'Кантип жардам беребиз', types: 'Өз тибиңди тап', countries: 'Өлкөлөр жана мүмкүнчүлүктөр', exams: 'Экзаменге даярдык', test: 'Кесип тандоо тести' },
+  en: { route: 'How we help', types: 'Find your type', countries: 'Countries and opportunities', exams: 'Exam preparation', test: 'Career orientation test' },
+};
+
+function PageIntro({ title, lead, number }) {
+  return <section className="page-intro chapter" id="top"><span className="page-intro-number">{number} / CONSULTEAM</span><h1>{title}</h1><p>{lead}</p></section>;
+}
+
+function PageLinks({ lang }) {
+  const items = {
+    ru: [['/how-it-works', '01', 'Путь к обучению', 'Узнай, как мы помогаем выбрать направление и подготовиться.'], ['/types', '02', 'Шесть типов интересов', 'Изучи сильные стороны и подходящие профессии.'], ['/countries', '03', 'Страны обучения', 'Сравни варианты и стоимость обучения.'], ['/exams', '04', 'Экзамены', 'Подготовься к языковым тестам.']],
+    ky: [['/how-it-works', '01', 'Окууга жол', 'Багыт тандоого жана даярданууга кантип жардам беребиз.'], ['/types', '02', 'Алты кызыгуу тиби', 'Күчтүү жактарыңды жана кесиптерди изилде.'], ['/countries', '03', 'Окуу өлкөлөрү', 'Варианттарды жана окуу баасын салыштыр.'], ['/exams', '04', 'Экзамендер', 'Тил сынактарына даярдан.']],
+    en: [['/how-it-works', '01', 'Your study path', 'See how we help you choose and prepare.'], ['/types', '02', 'Six interest types', 'Explore strengths and career options.'], ['/countries', '03', 'Study destinations', 'Compare your options and costs.'], ['/exams', '04', 'Exams', 'Prepare for language tests.']],
+  };
+  return <section className="page-links chapter"><div className="page-links-heading"><span>EXPLORE</span><h2>{lang === 'ky' ? 'Кийинки кадамың' : lang === 'ru' ? 'Выбери следующий шаг' : 'Choose your next step'}</h2></div><div className="page-links-grid">{items[lang].map(([href, number, title, lead]) => <a className="page-link" href={href} key={href}><span>{number}</span><h3>{title}</h3><p>{lead}</p><b aria-hidden="true">↗</b></a>)}</div></section>;
+}
+
 export default function App() {
   const [lang, setLang] = useState('ru');
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [presentation, setPresentation] = useState(null);
   const [privacyOpen, setPrivacyOpen] = useState(false);
+  const [submission, setSubmission] = useState(null);
+  const path = window.location.pathname.replace(/\/$/, '') || '/';
   const copy = content[lang];
 
   useEffect(() => {
@@ -329,13 +350,13 @@ export default function App() {
       <a className="skip-link" href="#main">Skip to content</a>
       <Header lang={lang} setLang={setLang} copy={copy} />
       <main id="main">
-        <Hero lang={lang} copy={copy} />
-        <RouteSection copy={copy} />
-        <TypeSection lang={lang} copy={copy} />
-        <CareerQuiz lang={lang} copy={copy} />
-        <DestinationSection lang={lang} copy={copy} onSelect={setSelectedCountry} />
-        <ExamsSection copy={copy} />
-        <CtaSection copy={copy} />
+        {path === '/' && <><Hero lang={lang} copy={copy} /><PageLinks lang={lang} /><CtaSection copy={copy} /></>}
+        {path === '/how-it-works' && <><PageIntro title={pageTitles[lang].route} lead={copy.approach.intro} number="01" /><RouteSection copy={copy} /><CtaSection copy={copy} /></>}
+        {path === '/types' && <><PageIntro title={pageTitles[lang].types} lead={copy.types.intro} number="02" /><TypeSection lang={lang} copy={copy} /><div className="page-end-cta chapter"><a href="/test" className="button button--black">{copy.hero.primary}<Arrow /></a></div></>}
+        {path === '/test' && <><PageIntro title={pageTitles[lang].test} lead={copy.quiz.intro} number="TEST" />{submission ? <CareerQuiz lang={lang} copy={copy} onComplete={(scores) => saveProffTestResult(submission, scores)} /> : <TestGate lang={lang} onRegistered={setSubmission} />}</>}
+        {path === '/countries' && <><PageIntro title={pageTitles[lang].countries} lead={copy.destinations.intro} number="03" /><DestinationSection lang={lang} copy={copy} onSelect={setSelectedCountry} /><CtaSection copy={copy} /></>}
+        {path === '/exams' && <><PageIntro title={pageTitles[lang].exams} lead={copy.exams.intro} number="04" /><ExamsSection copy={copy} /><CtaSection copy={copy} /></>}
+        {!['/', '/how-it-works', '/types', '/test', '/countries', '/exams'].includes(path) && <><PageIntro title="404" lead={lang === 'ky' ? 'Барак табылган жок.' : lang === 'ru' ? 'Страница не найдена.' : 'Page not found.'} number="404" /><div className="page-end-cta chapter"><a href="/" className="button button--black">Consulteam <Arrow /></a></div></>}
       </main>
       <Footer copy={copy} onPrivacy={() => setPrivacyOpen(true)} />
 
