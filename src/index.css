@@ -1,3 +1,11 @@
+@font-face {
+  font-family: 'Onest';
+  src: url('/fonts/Onest-Variable.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+
 :root {
   --ink: #10141b;
   --stone: #f3f6fb;
@@ -11,7 +19,7 @@
   --sky: #dbe9ff;
   --purple: #b47cf3;
   --muted: #50504a;
-  --font: 'Chillax', 'Segoe UI', sans-serif;
+  --font: 'Onest', 'Segoe UI', sans-serif;
   color: var(--ink);
   font-family: var(--font);
   font-synthesis: none;
