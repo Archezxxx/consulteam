@@ -1,6 +1,7 @@
 import { Suspense, useMemo, useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { CanvasTexture, SRGBColorSpace } from 'three';
+import Airliner from './Airliner';
 
 function earthTexture() {
   const canvas = document.createElement('canvas');
@@ -36,17 +37,6 @@ function earthTexture() {
   return texture;
 }
 
-function Plane() {
-  return <group scale={0.65}>
-    <mesh rotation={[0, 0, -Math.PI / 2]}><cylinderGeometry args={[0.055, 0.075, 0.95, 12]} /><meshStandardMaterial color="#ffffff" metalness={0.25} roughness={0.45} /></mesh>
-    <mesh position={[0.54, 0, 0]} rotation={[0, 0, -Math.PI / 2]}><coneGeometry args={[0.075, 0.22, 12]} /><meshStandardMaterial color="#d8f55a" /></mesh>
-    <mesh position={[0.03, 0, 0]}><boxGeometry args={[0.22, 1.25, 0.055]} /><meshStandardMaterial color="#f7fbff" /></mesh>
-    <mesh position={[-0.39, 0, 0]}><boxGeometry args={[0.16, 0.52, 0.045]} /><meshStandardMaterial color="#f7fbff" /></mesh>
-    <mesh position={[-0.4, 0, 0.17]}><boxGeometry args={[0.18, 0.05, 0.32]} /><meshStandardMaterial color="#e4f4ff" /></mesh>
-    <mesh position={[0.08, 0, 0.055]}><sphereGeometry args={[0.09, 12, 8]} /><meshStandardMaterial color="#173f83" /></mesh>
-  </group>;
-}
-
 function World({ reducedMotion }) {
   const globe = useRef(null);
   const aircraft = useRef(null);
@@ -54,15 +44,16 @@ function World({ reducedMotion }) {
   useFrame((state, delta) => {
     if (!reducedMotion && globe.current) globe.current.rotation.y += Math.min(delta, 0.04) * 0.1;
     if (aircraft.current) {
-      const angle = reducedMotion ? 0.55 : state.clock.elapsedTime * 0.35 + 0.55;
-      aircraft.current.position.set(2.38 * Math.cos(angle), 1.61 * Math.sin(angle), 1.75 * Math.sin(angle));
+      const angle = reducedMotion ? 0.55 : state.clock.elapsedTime * 0.26 + 0.55;
+      aircraft.current.position.set(1.8 * Math.cos(angle), 1.55 * Math.sin(angle), 1.9 * Math.sin(angle));
       aircraft.current.rotation.z = angle + Math.PI / 2;
+      aircraft.current.rotation.x = reducedMotion ? 0.12 : 0.12 + Math.sin(angle * 2) * 0.08;
     }
   });
   return <group rotation={[0.08, -0.2, 0]}>
     <mesh ref={globe} rotation={[0, -0.5, 0]}><sphereGeometry args={[1.72, 64, 48]} /><meshStandardMaterial map={texture} roughness={0.83} metalness={0.03} /></mesh>
     <mesh rotation={[0.82, 0, -0.12]}><torusGeometry args={[2.36, 0.012, 8, 160]} /><meshBasicMaterial color="#d8f55a" transparent opacity={0.9} /></mesh>
-    <group ref={aircraft}><Plane /></group>
+    <group ref={aircraft}><Airliner /></group>
     <mesh position={[-2.22, 0.9, -0.4]}><sphereGeometry args={[0.045, 12, 8]} /><meshBasicMaterial color="#d8f55a" /></mesh>
     <mesh position={[2.01, -1.55, -0.5]}><sphereGeometry args={[0.035, 12, 8]} /><meshBasicMaterial color="#d8f55a" /></mesh>
   </group>;

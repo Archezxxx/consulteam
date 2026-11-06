@@ -951,7 +951,7 @@ button:focus-visible, a:focus-visible { outline: 4px solid var(--paper); outline
 .desktop-nav a[aria-current="page"] { text-decoration: underline; text-underline-offset: 7px; }
 .brand-mark, .brand--inverse .brand-mark { width: 39px; height: 42px; background: transparent; transform: none; }
 .brand-mark img { width: 100%; height: 100%; object-fit: contain; filter: brightness(0) invert(1); }
-.hero-shape-wrap { position: relative; width: min(45vw, 650px); aspect-ratio: 1; min-height: 0; }
+.hero-shape-wrap { position: relative; width: min(45vw, 650px); aspect-ratio: 1; min-height: 0; transform: translateX(-40px); }
 .globe-fallback { display: block; width: 100%; height: 100%; opacity: .8; }
 .career-scene { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; margin: auto; opacity: 1; pointer-events: none; }
 .career-scene canvas { display: block; }
@@ -1018,6 +1018,6 @@ button:focus-visible, a:focus-visible { outline: 4px solid var(--paper); outline
 .study-programs small { display: block; margin-bottom: 5px; color: #5b6680; font-size: 12px; }
 .study-note { max-width: 870px; margin: 27px 0; color: #5b6680; font-size: 14px; }
 .study-recommendations > .button { margin-top: 6px; }
-@media (max-width: 800px) { .page-intro { min-height: 300px; padding-top: 80px; } .test-gate { grid-template-columns: 1fr; } .test-gate-mark { display: none; } .hero-shape-wrap { width: min(88vw, 560px); margin-inline: auto; } }
+@media (max-width: 800px) { .page-intro { min-height: 300px; padding-top: 80px; } .test-gate { grid-template-columns: 1fr; } .test-gate-mark { display: none; } .hero-shape-wrap { width: min(88vw, 560px); margin-inline: auto; transform: none; } }
 @media (max-width: 800px) { .study-countries { grid-template-columns: repeat(2, minmax(0, 1fr)); } .study-programs article { grid-template-columns: 28px 1fr 1fr; } .study-programs article div:last-child { grid-column: 2 / -1; } }
 @media (max-width: 520px) { .page-links-heading { display: block; } .page-links-heading h2 { margin-top: 18px; } .page-links-grid, .test-gate-pair, .study-countries { grid-template-columns: 1fr; } .page-link { min-height: 240px; padding: 25px; } .test-gate-form .button { width: 100%; } .page-intro { min-height: 280px; } .page-intro h1 { font-size: clamp(42px, 11vw, 58px); overflow-wrap: anywhere; } .test-gate-copy h1 { font-size: clamp(46px, 12vw, 66px); } .hero-cta-desktop { display: inline-flex; } .button.hero-cta-mobile { display: none; } .hero-secondary { margin: 18px 0 0; } .study-recommendations { margin-top: 55px; padding-top: 45px; } .study-program-head { display: block; } .study-programs article { grid-template-columns: 26px 1fr; gap: 12px; } .study-programs article div { grid-column: 2; } .study-recommendations > .button { width: 100%; } }
