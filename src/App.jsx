@@ -303,7 +303,7 @@ function Footer({ copy, onPrivacy }) {
 }
 
 const pageTitles = {
-  ru: { route: 'Как мы помогаем', types: 'Найди свой тип', countries: 'Страны и возможности', exams: 'Подготовка к экзаменам', test: 'Профориентационный тест' },
+  ru: { route: 'Как мы помогаем', types: 'Найди свой тип', countries: 'Страны и возможности', exams: 'Подготовка к экзаменам', test: 'Тест по выбору профессии' },
   ky: { route: 'Кантип жардам беребиз', types: 'Өз тибиңди тап', countries: 'Өлкөлөр жана мүмкүнчүлүктөр', exams: 'Экзаменге даярдык', test: 'Кесип тандоо тести' },
   en: { route: 'How we help', types: 'Find your type', countries: 'Countries and opportunities', exams: 'Exam preparation', test: 'Career orientation test' },
 };
