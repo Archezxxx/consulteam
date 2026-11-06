@@ -24,9 +24,9 @@ function CloseIcon() {
 
 function Brand({ inverse = false }) {
   return (
-    <a className={`brand${inverse ? ' brand--inverse' : ''}`} href="/" aria-label="Consulteam — home">
-      <span className="brand-mark" aria-hidden="true"><img src={asset('/favicon.svg')} alt="" /></span>
-      <span>Consulteam</span>
+    <a className={`brand${inverse ? ' brand--inverse' : ''}`} href="/" aria-label="Consult Team — home">
+      <span className="brand-mark" aria-hidden="true"><img src={asset('/consult-team-mark.png')} alt="" /></span>
+      <span>Consult Team</span>
     </a>
   );
 }
@@ -82,18 +82,13 @@ function Header({ lang, setLang, copy }) {
   );
 }
 
-function RiasecShape({ lang }) {
-  const profiles = riasec[lang];
-  return (
-    <div className="riasec-shape" aria-label="Six RIASEC career types">
-      <div className="riasec-core"><strong>15</strong><span>{lang === 'ky' ? 'суроо' : lang === 'ru' ? 'вопросов' : 'questions'}</span></div>
-      {TYPE_ORDER.map((type, index) => (
-        <div className={`riasec-node riasec-node--${index + 1}`} key={type} style={{ '--node': typePalette[type] }}>
-          <strong>{type}</strong><span>{profiles[type].name}</span>
-        </div>
-      ))}
-    </div>
-  );
+function GlobeFallback() {
+  return <svg className="globe-fallback" viewBox="0 0 600 600" role="img" aria-label="Глобус и самолёт на орбите">
+    <circle cx="300" cy="300" r="185" fill="#16356e" stroke="#96d9ef" strokeWidth="3" />
+    <path d="M208 156l65 5 18 27-14 25 35 31-17 39-48 3-29-39-38-8-12-37zm146 9 54 20 41 34-9 42-46 13-28-37-42 7-23-39zm-104 170 65-19 46 29-2 57-28 47-39 19-35-42-12-52zm169 17 28 12 21 37-38 21-38-20z" fill="#b9e6a8" />
+    <ellipse cx="300" cy="300" rx="260" ry="126" transform="rotate(-23 300 300)" fill="none" stroke="#d8f55a" strokeWidth="4" />
+    <path d="M478 151l27 12-27 2-7 16-7-3 2-18-19-12 6-4 22 8 10-12 7 3z" fill="#fff" />
+  </svg>;
 }
 
 function Hero({ lang, copy }) {
@@ -113,7 +108,7 @@ function Hero({ lang, copy }) {
         <a className="button button--black hero-cta-desktop" href="/test">{copy.hero.primary}<Arrow /></a>
         <a className="hero-secondary" href="/countries">{copy.hero.secondary}<Arrow /></a>
       </div>
-      <div className="hero-shape-wrap"><RiasecShape lang={lang} />{hasWebGL && <Suspense fallback={null}><CareerScene /></Suspense>}</div>
+      <div className="hero-shape-wrap"><GlobeFallback />{hasWebGL && <Suspense fallback={null}><CareerScene /></Suspense>}</div>
       <a className="button button--black hero-cta-mobile" href="/test">{copy.hero.primary}<Arrow /></a>
     </section>
   );
