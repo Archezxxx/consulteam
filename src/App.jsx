@@ -31,8 +31,8 @@ function Brand({ inverse = false }) {
   );
 }
 
-function Reveal({ children, className = '' }) {
-  return <div className={className}>{children}</div>;
+function Reveal({ children, className = '', ...props }) {
+  return <div className={className} {...props}>{children}</div>;
 }
 
 function LanguageSwitcher({ lang, onChange }) {
@@ -111,6 +111,7 @@ function Hero({ lang, copy }) {
         <h1>{copy.hero.title}</h1>
         <p className="hero-lead">{copy.hero.lead}</p>
         <a className="button button--black hero-cta-desktop" href="/test">{copy.hero.primary}<Arrow /></a>
+        <a className="hero-secondary" href="/countries">{copy.hero.secondary}<Arrow /></a>
       </div>
       <div className="hero-shape-wrap"><RiasecShape lang={lang} />{hasWebGL && <Suspense fallback={null}><CareerScene /></Suspense>}</div>
       <a className="button button--black hero-cta-mobile" href="/test">{copy.hero.primary}<Arrow /></a>
@@ -248,7 +249,7 @@ function DestinationSection({ lang, copy, onSelect }) {
       </div>
       <div className="destination-gallery">
         {countries.map((country, index) => (
-          <Reveal key={country.id} className="destination-tile" delay={(index % 3) * 0.06}>
+          <Reveal key={country.id} id={country.id} className="destination-tile" delay={(index % 3) * 0.06}>
             <button type="button" onClick={() => onSelect(country)} aria-label={`${copy.destinations.explore}: ${country.names[lang]}`}>
               <img src={asset(country.image)} alt={country.names[lang]} loading="lazy" />
               <span className="destination-label" style={{ '--strip': strips[index] }}><strong>{country.names[lang]}</strong><span>{copy.destinations.explore}</span></span>
@@ -295,9 +296,9 @@ function CtaSection({ copy }) {
 function Footer({ copy, onPrivacy }) {
   return (
     <footer className="site-footer chapter chapter--blue">
-      <div className="footer-top"><Brand inverse /><p>{copy.footer.address}<br />{copy.footer.hours}</p><a className="footer-back" href="#top" aria-label="Back to top">↑</a></div>
+      <div className="footer-top"><Brand inverse /><p><a href="https://2gis.kg/bishkek/geo/70030076176589250" target="_blank" rel="noreferrer">{copy.footer.address}</a><br />{copy.footer.hours}</p><a className="footer-back" href="#top" aria-label="Back to top">↑</a></div>
       <div className="footer-contact"><p>{copy.footer.text}</p><a href={`https://wa.me/${WHATSAPP}`} target="_blank" rel="noreferrer">+996 709 694 959</a></div>
-      <div className="footer-meta"><button type="button" onClick={onPrivacy}>{copy.footer.privacy}</button><a href="https://www.instagram.com/consultteam.kg/" target="_blank" rel="noreferrer">Instagram</a><span>{copy.footer.rights}</span></div>
+      <div className="footer-meta"><button type="button" onClick={onPrivacy}>{copy.footer.privacy}</button><a href="https://www.instagram.com/consulteam.kg/" target="_blank" rel="noreferrer">Instagram</a><span>{copy.footer.rights}</span></div>
     </footer>
   );
 }

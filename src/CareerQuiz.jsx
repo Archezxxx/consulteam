@@ -1,6 +1,7 @@
 import { useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { TYPE_ORDER, questions, riasec, typePalette } from './content';
+import StudyRecommendations from './StudyRecommendations';
 
 const emptyScores = () => TYPE_ORDER.reduce((acc, type) => ({ ...acc, [type]: 0 }), {});
 
@@ -257,6 +258,8 @@ export default function CareerQuiz({ lang, copy, onComplete }) {
                       </article>
                     </div>
                   </section>
+
+                  <StudyRecommendations lang={lang} topTypes={topThree.map(({ type }) => type)} />
 
                   <p className="quiz-disclaimer">{t.disclaimer}</p>
                   {saveState === 'saving' && <p className="result-save-note" role="status">{lang === 'ky' ? 'Жыйынтык сакталууда…' : lang === 'ru' ? 'Сохраняем результат…' : 'Saving your result…'}</p>}
