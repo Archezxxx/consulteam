@@ -112,7 +112,7 @@ function Hero({ lang, copy }) {
         <p className="hero-lead">{copy.hero.lead}</p>
         <a className="button button--black hero-cta-desktop" href="/test">{copy.hero.primary}<Arrow /></a>
       </div>
-      <div className="hero-shape-wrap">{hasWebGL ? <Suspense fallback={<RiasecShape lang={lang} />}><CareerScene /></Suspense> : <RiasecShape lang={lang} />}</div>
+      <div className="hero-shape-wrap"><RiasecShape lang={lang} />{hasWebGL && <Suspense fallback={null}><CareerScene /></Suspense>}</div>
       <a className="button button--black hero-cta-mobile" href="/test">{copy.hero.primary}<Arrow /></a>
     </section>
   );
