@@ -6,7 +6,7 @@
   "homepage": "https://Archezxxx.github.io/consulteam/",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && node -e \"import('node:fs').then(fs => fs.copyFileSync('dist/index.html', 'dist/404.html'))\"",
+    "build": "vite build && node scripts/prepare-static-routes.mjs",
     "preview": "vite preview",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist"
