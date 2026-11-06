@@ -95,10 +95,9 @@ export default function CareerQuiz({ lang, copy }) {
   const whatsappHref = `https://wa.me/996709694959?text=${encodeURIComponent(whatsappText)}`;
 
   return (
-    <section id="quiz" className="quiz-section section" ref={quizRef} aria-labelledby="quiz-title">
+    <section id="quiz" className="quiz-section chapter chapter--blue" ref={quizRef} aria-labelledby="quiz-title" data-ui>
       <div className="shell">
         <div className="quiz-heading">
-          <p className="eyebrow">{t.eyebrow}</p>
           <h2 id="quiz-title">{t.title}</h2>
           <p>{t.intro}</p>
         </div>
@@ -114,7 +113,7 @@ export default function CareerQuiz({ lang, copy }) {
                   <div className="orbit-core"><strong>15</strong><span>{lang === 'ky' ? 'суроо' : lang === 'ru' ? 'вопросов' : 'questions'}</span></div>
                 </div>
                 <div className="quiz-intro-copy">
-                  <p className="quiz-kicker">RIASEC · Holland Code</p>
+                  <p className="quiz-meta">RIASEC / Holland Code</p>
                   <h3>{lang === 'ky' ? 'Кызыгууңдун картасын түз' : lang === 'ru' ? 'Собери карту своих интересов' : 'Build your interest map'}</h3>
                   <p>{t.duration}</p>
                   <button type="button" className="button button--ink" onClick={start}>
@@ -135,7 +134,7 @@ export default function CareerQuiz({ lang, copy }) {
                   <motion.div className="progress-value" animate={{ width: `${((current + 1) / questions.length) * 100}%` }} transition={{ duration: 0.35 }} />
                 </div>
                 <div className="question-layout">
-                  <div className="question-number" aria-hidden="true">{String(current + 1).padStart(2, '0')}</div>
+                  <div className="question-number" aria-hidden="true">{current + 1}</div>
                   <div>
                     <h3>{questions[current].prompt[lang]}</h3>
                     <div className="answer-grid" role="radiogroup" aria-label={questions[current].prompt[lang]}>
@@ -154,7 +153,7 @@ export default function CareerQuiz({ lang, copy }) {
                           >
                             <span className="answer-key">{String.fromCharCode(65 + index)}</span>
                             <span>{item.text[lang]}</span>
-                            <span className="answer-check" aria-hidden="true">{selected ? '✓' : ''}</span>
+                            <span className="answer-check" aria-hidden="true">{selected ? <span className="check-mark" /> : ''}</span>
                           </button>
                         );
                       })}
@@ -175,7 +174,6 @@ export default function CareerQuiz({ lang, copy }) {
               <motion.div key="quiz-result" className="result-view" initial={{ opacity: 0, y: 22 }} animate={{ opacity: 1, y: 0 }}>
                 <div className="result-hero">
                   <div>
-                    <p className="eyebrow eyebrow--light">{t.resultEyebrow}</p>
                     <p className="result-label">{t.resultTitle}</p>
                     <h3 className="holland-code" aria-label={`${t.resultTitle}: ${hollandCode}`}>{hollandCode}</h3>
                     <p className="result-explanation">{isMixed ? t.mixed : t.clear}</p>
@@ -190,7 +188,6 @@ export default function CareerQuiz({ lang, copy }) {
                 <div className="result-body">
                   <section className="score-section" aria-labelledby="score-heading">
                     <div className="result-section-heading">
-                      <p className="mini-index">01</p>
                       <h4 id="score-heading">{t.chartTitle}</h4>
                     </div>
                     <div className="score-list">
@@ -209,7 +206,6 @@ export default function CareerQuiz({ lang, copy }) {
 
                   <section className="top-types" aria-labelledby="top-heading">
                     <div className="result-section-heading">
-                      <p className="mini-index">02</p>
                       <h4 id="top-heading">{t.topTitle}</h4>
                     </div>
                     <div className="top-type-grid">
@@ -227,7 +223,6 @@ export default function CareerQuiz({ lang, copy }) {
 
                   <section className="detail-section" aria-labelledby="detail-heading">
                     <div className="result-section-heading">
-                      <p className="mini-index">03</p>
                       <h4 id="detail-heading">{profiles[topThree[0].type].name}: {profiles[topThree[0].type].oneLine}</h4>
                     </div>
                     <div className="detail-grid">
