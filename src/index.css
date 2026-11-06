@@ -942,7 +942,7 @@ button:focus-visible, a:focus-visible { outline: 4px solid var(--paper); outline
 .desktop-nav a[aria-current="page"] { text-decoration: underline; text-underline-offset: 7px; }
 .hero-shape-wrap { position: relative; }
 .hero-shape-wrap .riasec-shape { position: relative; z-index: 1; }
-.career-scene { position: absolute; inset: -8%; z-index: 2; width: 116%; height: 116%; margin: auto; opacity: .32; pointer-events: none; }
+.career-scene { position: absolute; inset: -8%; z-index: 0; width: 116%; height: 116%; margin: auto; opacity: .48; pointer-events: none; }
 .career-scene canvas { display: block; }
 .page-intro { background: var(--blue); color: #fff; min-height: 370px; display: flex; flex-direction: column; justify-content: flex-end; padding-top: 115px; padding-bottom: 64px; }
 .page-intro-number { font-size: 13px; font-weight: 800; letter-spacing: .16em; opacity: .74; }
