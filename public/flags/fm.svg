@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 24">
+   <defs>
+      <clipPath id="flag-micronesia-clip">
+         <rect width="30" height="24" fill="#fff" rx="4"/>
+      </clipPath>
+   </defs>
+   <g clip-path="url(#flag-micronesia-clip)">
+      <path fill="#83b2da" d="M0 0h30v24H0z"/>
+      <path fill="#fff" d="m15 3.63-.59 1.81h-1.9l1.54 1.12-.6 1.82L15 7.25l1.54 1.13-.59-1.82 1.55-1.12h-1.91zm6.53 8.93 1.73-.56-1.73-.56V9.63l-1.07 1.46-1.72-.56L19.8 12l-1.07 1.47 1.72-.56 1.07 1.47zm-5.58 4.88.6-1.82L15 16.76l-1.54-1.12.59 1.8-1.54 1.13h1.9l.59 1.81.59-1.81h1.9zm-6.41-6.35L8.47 9.63v1.8L6.74 12l1.73.56v1.81l1.07-1.46 1.72.56L10.2 12l1.06-1.47z"/>
+   </g>
+   <rect width="29" height="23" x=".5" y=".5" fill="none" opacity=".15" stroke="#000" stroke-width="1" rx="3.5"/>
+   <path fill="#fff" d="M4 1a3 3 0 0 0-3 3v1a3 3 0 0 1 3-3h22a3 3 0 0 1 3 3v-1a3 3 0 0 0-3-3Z" opacity=".1"/>
+</svg>

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 24">
+   <defs>
+      <clipPath id="flag-greenland-clip">
+         <rect width="30" height="24" fill="#fff" rx="4"/>
+      </clipPath>
+   </defs>
+   <g clip-path="url(#flag-greenland-clip)">
+      <path fill="#fff" d="M0 0h30v24H0z"/>
+      <path fill="#d00c33" d="M10.93 3.98a7.96 7.96 0 0 1 7.96 7.71v.32l11.11.05V24H0V11.94l2.97.02v.23A7.96 7.96 0 0 0 18.9 12l-15.92-.05v-.02a7.96 7.96 0 0 1 7.71-7.96z"/>
+   </g>
+   <rect width="29" height="23" x=".5" y=".5" fill="none" opacity=".15" stroke="#000" stroke-width="1" rx="3.5"/>
+   <path fill="#fff" d="M4 1a3 3 0 0 0-3 3v1a3 3 0 0 1 3-3h22a3 3 0 0 1 3 3v-1a3 3 0 0 0-3-3Z" opacity=".1"/>
+</svg>

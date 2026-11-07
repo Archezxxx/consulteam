@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 24">
+   <defs>
+      <clipPath id="flag-panama-clip">
+         <rect width="30" height="24" fill="#fff" rx="4"/>
+      </clipPath>
+   </defs>
+   <g clip-path="url(#flag-panama-clip)">
+      <path fill="#fff" d="M0 0h15v12H0z"/>
+      <path fill="#c92d25" d="M30 12H15V0h15z"/>
+      <path fill="#081d53" d="M0 24V12h15v12z"/>
+      <path fill="#fff" d="M30 24H15V12h15z"/>
+      <path fill="#081d53" d="M7.81 2.67 7 5.21H4.3L6.48 6.8l-.83 2.54L7.8 7.76l2.17 1.57-.83-2.54L11.3 5.2H8.64z"/>
+      <path fill="#c92d25" d="m21.94 13.98-.83 2.55h-2.67l2.16 1.57-.83 2.54 2.17-1.57 2.16 1.57-.83-2.54 2.17-1.57h-2.68z"/>
+   </g>
+   <rect width="29" height="23" x=".5" y=".5" fill="none" opacity=".15" stroke="#000" stroke-width="1" rx="3.5"/>
+   <path fill="#fff" d="M4 1a3 3 0 0 0-3 3v1a3 3 0 0 1 3-3h22a3 3 0 0 1 3 3v-1a3 3 0 0 0-3-3Z" opacity=".1"/>
+</svg>

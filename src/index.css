@@ -982,16 +982,26 @@ button:focus-visible, a:focus-visible { outline: 4px solid var(--paper); outline
 .test-gate-form input:not([type="checkbox"]) { width: 100%; min-height: 54px; border: 1px solid #b9c5d9; background: #fff; color: #101729; border-radius: 0; padding: 12px 15px; font: inherit; font-weight: 400; }
 .test-gate-form input:focus-visible { outline: 2px solid #2f4fb8; outline-offset: 2px; }
 .test-phone-field > label { display: block; margin-bottom: 9px; font-size: 15px; font-weight: 700; }
-.test-phone-control { display: grid; grid-template-columns: 138px minmax(0, 1fr); min-height: 54px; border: 1px solid #b9c5d9; }
+.test-phone-control { position: relative; display: grid; grid-template-columns: 138px minmax(0, 1fr); min-height: 54px; border: 1px solid #b9c5d9; }
 .test-phone-control:focus-within { outline: 2px solid #2f4fb8; outline-offset: 2px; }
 .test-phone-control.is-invalid { border-color: #a5232a; }
-.test-phone-country { position: relative; display: flex; align-items: center; justify-content: center; background: #e9efff; border-right: 1px solid #b9c5d9; }
-.test-phone-country > span { display: flex; align-items: center; gap: 5px; color: #101729; font-size: 15px; font-weight: 700; white-space: nowrap; pointer-events: none; }
-.test-phone-country strong { display: grid; place-items: center; min-width: 30px; height: 30px; padding: 0 3px; background: #fff; color: #164fc9; font-size: 11px; letter-spacing: .04em; }
-.test-phone-country b { margin-left: 3px; font-size: 18px; line-height: 1; }
-.test-phone-country select { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
-.test-gate-form .test-phone-control input { min-width: 0; min-height: 52px; border: 0; outline: 0; }
-.test-gate-form .test-phone-control input:focus-visible { outline: 0; }
+.test-phone-country { display: flex; align-items: stretch; background: #e9efff; border-right: 1px solid #b9c5d9; }
+.test-country-trigger { display: flex; align-items: center; justify-content: center; gap: 7px; width: 100%; min-height: 52px; padding: 7px; border: 0; background: transparent; color: #101729; font: inherit; font-size: 15px; font-weight: 700; cursor: pointer; }
+.test-country-trigger img, .test-country-option img { display: block; flex: 0 0 auto; width: 30px; height: 24px; object-fit: contain; }
+.test-country-trigger:hover { background: #dce8ff; }
+.test-country-chevron { margin-left: 2px; font-size: 18px; line-height: 1; }
+.test-country-popover { position: absolute; z-index: 30; top: calc(100% + 8px); left: 0; width: min(420px, 100%); padding: 8px; border: 1px solid #aebcda; background: #fff; box-shadow: 0 16px 32px rgb(20 42 88 / 18%); }
+.test-gate-form .test-country-popover > input { min-height: 42px; margin-bottom: 7px; padding: 9px 11px; font-size: 14px; }
+.test-country-list { max-height: min(310px, 47vh); overflow-y: auto; overscroll-behavior: contain; }
+.test-country-option { display: grid; grid-template-columns: 30px minmax(0, 1fr) auto; align-items: center; gap: 10px; width: 100%; min-height: 43px; padding: 7px 9px; border: 0; background: #fff; color: #15213b; font: inherit; font-size: 14px; text-align: left; cursor: pointer; }
+.test-country-option img { width: 28px; height: 22px; }
+.test-country-option > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.test-country-option small { color: #52617d; font-size: 12px; white-space: nowrap; }
+.test-country-option.is-active, .test-country-option:hover { background: #e9efff; }
+.test-country-option[aria-selected="true"] { color: #164fc9; font-weight: 700; }
+.test-country-empty { margin: 0; padding: 15px 9px; color: #52617d; font-size: 14px; }
+.test-gate-form .test-phone-control > input { min-width: 0; min-height: 52px; border: 0; outline: 0; }
+.test-gate-form .test-phone-control > input:focus-visible { outline: 0; }
 .test-phone-hint { margin: 8px 0 0; color: #61718d; font-size: 13px; font-weight: 400; line-height: 1.4; }
 .test-phone-hint.is-error { color: #a5232a; }
 .test-gate-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }

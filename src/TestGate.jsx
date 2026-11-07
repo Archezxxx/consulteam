@@ -1,6 +1,7 @@
 import { useMemo, useRef, useState } from 'react';
 import { AsYouType, getCountries, getCountryCallingCode, parsePhoneNumberFromString } from 'libphonenumber-js/max';
 import { PROFFTEST_API } from './proffTestApi';
+import CountryPicker from './CountryPicker';
 
 const labels = {
   ru: {
@@ -9,7 +10,8 @@ const labels = {
     name: 'ФИО ученика',
     phone: 'Номер телефона',
     phoneCountry: 'Страна и телефонный код',
-    phoneHint: 'Номер без кода страны. Код добавим автоматически.',
+    countrySearch: 'Найти страну или код',
+    countryEmpty: 'Страна не найдена',
     phonePlaceholder: 'Номер телефона',
     phoneInvalid: 'Проверь номер: для выбранной страны он должен иметь действующий формат и код оператора.',
     email: 'Email (необязательно)',
@@ -26,7 +28,8 @@ const labels = {
     name: 'Окуучунун аты-жөнү',
     phone: 'Телефон номери',
     phoneCountry: 'Өлкө жана телефон коду',
-    phoneHint: 'Өлкө кодусуз номерди жаз. Код автоматтык түрдө кошулат.',
+    countrySearch: 'Өлкөнү же кодду издөө',
+    countryEmpty: 'Өлкө табылган жок',
     phonePlaceholder: 'Телефон номери',
     phoneInvalid: 'Номерди текшер: тандалган өлкө үчүн туура формат жана оператор коду керек.',
     email: 'Email (милдеттүү эмес)',
@@ -43,7 +46,8 @@ const labels = {
     name: 'Student full name',
     phone: 'Phone number',
     phoneCountry: 'Country and calling code',
-    phoneHint: 'Enter the number without a country code. We add it automatically.',
+    countrySearch: 'Search country or code',
+    countryEmpty: 'No country found',
     phonePlaceholder: 'Phone number',
     phoneInvalid: 'Check the number: its length and prefix must be valid for the selected country.',
     email: 'Email (optional)',
@@ -97,10 +101,9 @@ export default function TestGate({ lang, onRegistered }) {
   const [phoneTouched, setPhoneTouched] = useState(false);
   const phoneInput = useRef(null);
   const countries = useMemo(() => phoneOptions(lang), [lang]);
-  const selectedCountry = countries.find((item) => item.code === country);
   const formattedPhone = useMemo(() => new AsYouType(country).input(phoneDigits), [country, phoneDigits]);
   const validPhone = useMemo(() => parseValidPhone(phoneDigits, country), [country, phoneDigits]);
-  const phoneError = phoneTouched && phoneDigits && !validPhone;
+  const phoneError = Boolean(phoneTouched && phoneDigits && !validPhone);
 
   async function submit(event) {
     event.preventDefault();
@@ -147,15 +150,10 @@ export default function TestGate({ lang, onRegistered }) {
       <div className="test-phone-field">
         <label htmlFor="phone-national">{t.phone}</label>
         <div className={`test-phone-control${phoneError ? ' is-invalid' : ''}`}>
-          <div className="test-phone-country">
-            <span aria-hidden="true"><strong>{selectedCountry.code}</strong> {selectedCountry.dial} <b>⌄</b></span>
-            <select aria-label={t.phoneCountry} value={country} onChange={(event) => { setCountry(event.target.value); setPhoneDigits(''); setPhoneTouched(false); setError(''); }}>
-              {countries.map((item) => <option key={item.code} value={item.code}>{item.name} ({item.dial})</option>)}
-            </select>
-          </div>
-          <input ref={phoneInput} id="phone-national" name="phone_national" type="tel" inputMode="numeric" autoComplete="tel-national" required value={formattedPhone} onChange={(event) => { setPhoneDigits(nationalDigits(event.target.value, country)); setError(''); }} onBlur={() => setPhoneTouched(true)} placeholder={country === 'KG' ? '700 000 000' : t.phonePlaceholder} aria-invalid={Boolean(phoneError)} aria-describedby={phoneError ? 'phone-error' : 'phone-hint'} />
+          <CountryPicker countries={countries} value={country} label={t.phoneCountry} searchLabel={t.countrySearch} emptyLabel={t.countryEmpty} onChange={(code) => { setCountry(code); setPhoneDigits(''); setPhoneTouched(false); setError(''); }} />
+          <input ref={phoneInput} id="phone-national" name="phone_national" type="tel" inputMode="numeric" autoComplete="tel-national" required value={formattedPhone} onChange={(event) => { setPhoneDigits(nationalDigits(event.target.value, country)); setError(''); }} onBlur={() => setPhoneTouched(true)} placeholder={country === 'KG' ? '700 000 000' : t.phonePlaceholder} aria-invalid={phoneError} aria-describedby={phoneError ? 'phone-error' : undefined} />
         </div>
-        <p id={phoneError ? 'phone-error' : 'phone-hint'} className={`test-phone-hint${phoneError ? ' is-error' : ''}`} role={phoneError ? 'alert' : undefined}>{phoneError ? t.phoneInvalid : `${selectedCountry.name} · ${t.phoneHint}`}</p>
+        {phoneError ? <p id="phone-error" className="test-phone-hint is-error" role="alert">{t.phoneInvalid}</p> : null}
       </div>
       <div className="test-gate-pair">
         <label>{t.email}<input name="email" type="email" autoComplete="email" maxLength={255} /></label>

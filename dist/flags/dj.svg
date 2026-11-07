@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 24">
+   <defs>
+      <clipPath id="flag-djibouti-clip">
+         <rect width="30" height="24" fill="#fff" rx="4"/>
+      </clipPath>
+   </defs>
+   <g clip-path="url(#flag-djibouti-clip)">
+      <path fill="#4fac3f" d="M30 24H0V12h30z"/>
+      <path fill="#7cb2e3" d="M30 12H0V0h30z"/>
+      <path fill="#fff" d="M0 24V0l18 12z"/>
+      <path fill="#c62d25" d="m8.47 12.55 2.1-1.52h-2.6l-.8-2.46-.8 2.46H3.78l2.1 1.52-.8 2.47 2.1-1.53 2.09 1.53z"/>
+   </g>
+   <rect width="29" height="23" x=".5" y=".5" fill="none" opacity=".15" stroke="#000" stroke-width="1" rx="3.5"/>
+   <path fill="#fff" d="M4 1a3 3 0 0 0-3 3v1a3 3 0 0 1 3-3h22a3 3 0 0 1 3 3v-1a3 3 0 0 0-3-3Z" opacity=".1"/>
+</svg>

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 24">
+   <defs>
+      <clipPath id="flag-cuba-clip">
+         <rect width="30" height="24" fill="#fff" rx="4"/>
+      </clipPath>
+   </defs>
+   <g clip-path="url(#flag-cuba-clip)">
+      <path fill="#0c258b" d="M0 24V0h30v24z"/>
+      <path fill="#fff" d="M0 14.5h30V19H0zM0 5h30v4.5H0z"/>
+      <path fill="#bc2b20" d="m0 0 15 12L0 24z"/>
+   </g>
+   <rect width="29" height="23" x=".5" y=".5" fill="none" opacity=".15" stroke="#000" stroke-width="1" rx="3.5"/>
+   <path fill="#fff" d="M4 1a3 3 0 0 0-3 3v1a3 3 0 0 1 3-3h22a3 3 0 0 1 3 3v-1a3 3 0 0 0-3-3Z" opacity=".1"/>
+</svg>

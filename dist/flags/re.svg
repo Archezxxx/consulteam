@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 24">
+   <defs>
+      <clipPath id="flag-reunion-clip">
+         <rect width="30" height="24" fill="#fff" rx="4"/>
+      </clipPath>
+   </defs>
+   <g clip-path="url(#flag-reunion-clip)">
+      <path fill="#36f" d="M0 24V0h30v24z"/>
+      <path fill="red" d="M15 12 0 24h30z"/>
+      <path fill="#ff0" d="M15 12.02 30 14v-4zM0 10v4l15-1.98zM0 0v1.5L15 12 2.5 0zm30 2.5V0h-2.25L15 12zM17 0h-4l2 12z"/>
+   </g>
+   <rect width="29" height="23" x=".5" y=".5" fill="none" opacity=".15" stroke="#000" stroke-width="1" rx="3.5"/>
+   <path fill="#fff" d="M4 1a3 3 0 0 0-3 3v1a3 3 0 0 1 3-3h22a3 3 0 0 1 3 3v-1a3 3 0 0 0-3-3Z" opacity=".1"/>
+</svg>
