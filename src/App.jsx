@@ -1,11 +1,12 @@
 import { lazy, Suspense, useCallback, useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import CareerQuiz from './CareerQuiz';
-import TestGate, { saveProffTestResult } from './TestGate';
+import { saveProffTestResult } from './proffTestApi';
 import UniversityDirectory from './UniversityDirectory';
 import { content, countries, riasec, TYPE_ORDER, typePalette } from './content';
 
 const CareerScene = lazy(() => import('./CareerScene'));
+const TestGate = lazy(() => import('./TestGate'));
 
 const BASE_URL = import.meta.env.BASE_URL || '/';
 const WHATSAPP = '996709694959';
@@ -351,7 +352,7 @@ export default function App() {
         {path === '/' && <><Hero lang={lang} copy={copy} /><PageLinks lang={lang} /><CtaSection copy={copy} /></>}
         {path === '/how-it-works' && <><PageIntro title={pageTitles[lang].route} lead={copy.approach.intro} number="01" /><RouteSection copy={copy} /><CtaSection copy={copy} /></>}
         {path === '/types' && <><PageIntro title={pageTitles[lang].types} lead={copy.types.intro} number="02" /><TypeSection lang={lang} copy={copy} /><div className="page-end-cta chapter"><a href="/test" className="button button--black">{copy.hero.primary}<Arrow /></a></div></>}
-        {path === '/test' && <><PageIntro title={pageTitles[lang].test} lead={copy.quiz.intro} number="TEST" />{submission ? <CareerQuiz lang={lang} copy={copy} onComplete={(scores) => saveProffTestResult(submission, scores)} /> : <TestGate lang={lang} onRegistered={setSubmission} />}</>}
+        {path === '/test' && <><PageIntro title={pageTitles[lang].test} lead={copy.quiz.intro} number="TEST" />{submission ? <CareerQuiz lang={lang} copy={copy} onComplete={(scores) => saveProffTestResult(submission, scores)} /> : <Suspense fallback={<section className="test-gate chapter" aria-busy="true" />}><TestGate lang={lang} onRegistered={setSubmission} /></Suspense>}</>}
         {path === '/countries' && <><PageIntro title={pageTitles[lang].countries} lead={copy.destinations.intro} number="03" /><DestinationSection lang={lang} copy={copy} onSelect={setSelectedCountry} /><CtaSection copy={copy} /></>}
         {path === '/universities' && <UniversityDirectory lang={lang} />}
         {path === '/exams' && <><PageIntro title={pageTitles[lang].exams} lead={copy.exams.intro} number="04" /><ExamsSection copy={copy} /><CtaSection copy={copy} /></>}
