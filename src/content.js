@@ -1,3 +1,5 @@
+import { universitiesForCountry } from './studyCatalog';
+
 export const TYPE_ORDER = ['R', 'I', 'A', 'S', 'E', 'C'];
 
 export const typePalette = {
@@ -357,10 +359,10 @@ export const riasec = {
 };
 
 export const countries = [
-  { id: 'taiwan', image: '/taiwan.jpg', presentation: { folder: '/presentations/taiwan', slides: 28 }, names: ml('Тайвань', 'Тайвань', 'Taiwan'), tuition: '$1,500–3,500 / year', living: '$300–500 / month', grants: 'MOE Taiwan Scholarship · university grants up to 100%', universities: ['National Taiwan University', 'National Tsing Hua University', 'Ming Chuan University'] },
-  { id: 'italy', image: '/italy.jpg', presentation: { folder: '/presentations/italy', slides: 22 }, names: ml('Италия', 'Италия', 'Italy'), tuition: '€156–3,000 / year', living: '€700–1,000 / month', grants: 'DSU · MAECI · regional support', universities: ['Politecnico di Milano', 'Sapienza University', 'University of Padua'] },
-  { id: 'turkey', image: '/turkey.jpg', presentation: { folder: '/presentations/turkey', slides: 21 }, names: ml('Түркия', 'Турция', 'Türkiye'), tuition: '$300–1,500 / year', living: '$250–450 / month', grants: 'Türkiye Scholarships · university discounts', universities: ['Sakarya University', 'Istanbul Kent University', 'Fenerbahçe University'] },
-  { id: 'malaysia', image: '/malaysia.jpg', presentation: { folder: '/presentations/malaysia', slides: 19 }, names: ml('Малайзия', 'Малайзия', 'Malaysia'), tuition: '$4,000–8,000 / year', living: '$300–450 / month', grants: 'Merit-based university discounts up to 50%', universities: ['INTI International University', "Taylor's University", 'Asia Pacific University'] },
-  { id: 'china', image: '/china.jpg', presentation: { folder: '/presentations/china', slides: 22 }, names: ml('Кытай', 'Китай', 'China'), tuition: '$2,500–5,000 / year', living: '$300–600 / month', grants: 'CSC · provincial and university scholarships', universities: ['Tsinghua University', 'Peking University', 'Zhejiang University'] },
-  { id: 'czech', image: '/czech.jpg', presentation: { folder: '/presentations/czech', slides: 15 }, names: ml('Чехия', 'Чехия', 'Czechia'), tuition: '€0 in Czech · from €3,000 in English', living: '€400–700 / month', grants: 'Public universities in Czech · selected stipends', universities: ['Charles University', 'Czech Technical University', 'Masaryk University'] },
+  { id: 'taiwan', image: '/taiwan.jpg', presentation: { folder: '/presentations/taiwan', slides: 28 }, names: ml('Тайвань', 'Тайвань', 'Taiwan'), tuition: '$1,500–3,500 / year', living: '$300–500 / month', grants: 'MOE Taiwan Scholarship · university grants up to 100%', universities: universitiesForCountry('taiwan').map((item) => item.name) },
+  { id: 'italy', image: '/italy.jpg', presentation: { folder: '/presentations/italy', slides: 22 }, names: ml('Италия', 'Италия', 'Italy'), tuition: '€156–3,000 / year', living: '€700–1,000 / month', grants: 'DSU · MAECI · regional support', universities: universitiesForCountry('italy').map((item) => item.name) },
+  { id: 'turkey', image: '/turkey.jpg', presentation: { folder: '/presentations/turkey', slides: 21 }, names: ml('Түркия', 'Турция', 'Türkiye'), tuition: '$300–1,500 / year', living: '$250–450 / month', grants: 'Türkiye Scholarships · university discounts', universities: universitiesForCountry('turkey').map((item) => item.name) },
+  { id: 'malaysia', image: '/malaysia.jpg', presentation: { folder: '/presentations/malaysia', slides: 19 }, names: ml('Малайзия', 'Малайзия', 'Malaysia'), tuition: '$4,000–8,000 / year', living: '$300–450 / month', grants: 'Merit-based university discounts up to 50%', universities: universitiesForCountry('malaysia').map((item) => item.name) },
+  { id: 'china', image: '/china.jpg', presentation: { folder: '/presentations/china', slides: 22 }, names: ml('Кытай', 'Китай', 'China'), tuition: '$2,500–5,000 / year', living: '$300–600 / month', grants: 'CSC · provincial and university scholarships', universities: universitiesForCountry('china').map((item) => item.name) },
+  { id: 'czech', image: '/czech.jpg', presentation: { folder: '/presentations/czech', slides: 15 }, names: ml('Чехия', 'Чехия', 'Czechia'), tuition: '€0 in Czech · from €3,000 in English', living: '€400–700 / month', grants: 'Public universities in Czech · selected stipends', universities: universitiesForCountry('czech').map((item) => item.name) },
 ];

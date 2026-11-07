@@ -1,6 +1,6 @@
 import { copyFileSync, mkdirSync } from 'node:fs';
 
-const routes = ['how-it-works', 'types', 'test', 'countries', 'exams'];
+const routes = ['how-it-works', 'types', 'test', 'countries', 'universities', 'exams'];
 copyFileSync('dist/index.html', 'dist/404.html');
 for (const route of routes) {
   mkdirSync(`dist/${route}`, { recursive: true });

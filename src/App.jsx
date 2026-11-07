@@ -2,6 +2,7 @@ import { lazy, Suspense, useCallback, useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import CareerQuiz from './CareerQuiz';
 import TestGate, { saveProffTestResult } from './TestGate';
+import UniversityDirectory from './UniversityDirectory';
 import { content, countries, riasec, TYPE_ORDER, typePalette } from './content';
 
 const CareerScene = lazy(() => import('./CareerScene'));
@@ -24,9 +25,9 @@ function CloseIcon() {
 
 function Brand({ inverse = false }) {
   return (
-    <a className={`brand${inverse ? ' brand--inverse' : ''}`} href="/" aria-label="Consult Team — home">
+    <a className={`brand${inverse ? ' brand--inverse' : ''}`} href="/" aria-label="Consulteam — home">
       <span className="brand-mark" aria-hidden="true"><img src={asset('/consult-team-mark.png')} alt="" /></span>
-      <span>Consult Team</span>
+      <span>Consulteam</span>
     </a>
   );
 }
@@ -54,6 +55,7 @@ function Header({ lang, setLang, copy }) {
     ['/how-it-works', copy.nav.approach],
     ['/types', lang === 'ky' ? 'Типтер' : lang === 'ru' ? 'Типы' : 'Types'],
     ['/countries', copy.nav.destinations],
+    ['/universities', lang === 'ky' ? 'Университеттер' : lang === 'ru' ? 'Университеты' : 'Universities'],
     ['/exams', copy.nav.exams],
   ];
 
@@ -310,9 +312,9 @@ function PageIntro({ title, lead, number }) {
 
 function PageLinks({ lang }) {
   const items = {
-    ru: [['/how-it-works', '01', 'Путь к обучению', 'Узнай, как мы помогаем выбрать направление и подготовиться.'], ['/types', '02', 'Шесть типов интересов', 'Изучи сильные стороны и подходящие профессии.'], ['/countries', '03', 'Страны обучения', 'Сравни варианты и стоимость обучения.'], ['/exams', '04', 'Экзамены', 'Подготовься к языковым тестам.']],
-    ky: [['/how-it-works', '01', 'Окууга жол', 'Багыт тандоого жана даярданууга кантип жардам беребиз.'], ['/types', '02', 'Алты кызыгуу тиби', 'Күчтүү жактарыңды жана кесиптерди изилде.'], ['/countries', '03', 'Окуу өлкөлөрү', 'Варианттарды жана окуу баасын салыштыр.'], ['/exams', '04', 'Экзамендер', 'Тил сынактарына даярдан.']],
-    en: [['/how-it-works', '01', 'Your study path', 'See how we help you choose and prepare.'], ['/types', '02', 'Six interest types', 'Explore strengths and career options.'], ['/countries', '03', 'Study destinations', 'Compare your options and costs.'], ['/exams', '04', 'Exams', 'Prepare for language tests.']],
+    ru: [['/how-it-works', '01', 'Путь к обучению', 'Узнай, как мы помогаем выбрать направление и подготовиться.'], ['/types', '02', 'Шесть типов интересов', 'Изучи сильные стороны и подходящие профессии.'], ['/countries', '03', 'Страны обучения', 'Сравни варианты и стоимость обучения.'], ['/universities', '04', 'Университеты', 'Изучи учебные заведения и подходящие направления.'], ['/exams', '05', 'Экзамены', 'Подготовься к языковым тестам.']],
+    ky: [['/how-it-works', '01', 'Окууга жол', 'Багыт тандоого жана даярданууга кантип жардам беребиз.'], ['/types', '02', 'Алты кызыгуу тиби', 'Күчтүү жактарыңды жана кесиптерди изилде.'], ['/countries', '03', 'Окуу өлкөлөрү', 'Варианттарды жана окуу баасын салыштыр.'], ['/universities', '04', 'Университеттер', 'Окуу жайларын жана ылайыктуу багыттарды изилде.'], ['/exams', '05', 'Экзамендер', 'Тил сынактарына даярдан.']],
+    en: [['/how-it-works', '01', 'Your study path', 'See how we help you choose and prepare.'], ['/types', '02', 'Six interest types', 'Explore strengths and career options.'], ['/countries', '03', 'Study destinations', 'Compare your options and costs.'], ['/universities', '04', 'Universities', 'Explore institutions and study fields.'], ['/exams', '05', 'Exams', 'Prepare for language tests.']],
   };
   return <section className="page-links chapter"><div className="page-links-heading"><span>EXPLORE</span><h2>{lang === 'ky' ? 'Кийинки кадамың' : lang === 'ru' ? 'Выбери следующий шаг' : 'Choose your next step'}</h2></div><div className="page-links-grid">{items[lang].map(([href, number, title, lead]) => <a className="page-link" href={href} key={href}><span>{number}</span><h3>{title}</h3><p>{lead}</p><b aria-hidden="true">↗</b></a>)}</div></section>;
 }
@@ -351,8 +353,9 @@ export default function App() {
         {path === '/types' && <><PageIntro title={pageTitles[lang].types} lead={copy.types.intro} number="02" /><TypeSection lang={lang} copy={copy} /><div className="page-end-cta chapter"><a href="/test" className="button button--black">{copy.hero.primary}<Arrow /></a></div></>}
         {path === '/test' && <><PageIntro title={pageTitles[lang].test} lead={copy.quiz.intro} number="TEST" />{submission ? <CareerQuiz lang={lang} copy={copy} onComplete={(scores) => saveProffTestResult(submission, scores)} /> : <TestGate lang={lang} onRegistered={setSubmission} />}</>}
         {path === '/countries' && <><PageIntro title={pageTitles[lang].countries} lead={copy.destinations.intro} number="03" /><DestinationSection lang={lang} copy={copy} onSelect={setSelectedCountry} /><CtaSection copy={copy} /></>}
+        {path === '/universities' && <UniversityDirectory lang={lang} />}
         {path === '/exams' && <><PageIntro title={pageTitles[lang].exams} lead={copy.exams.intro} number="04" /><ExamsSection copy={copy} /><CtaSection copy={copy} /></>}
-        {!['/', '/how-it-works', '/types', '/test', '/countries', '/exams'].includes(path) && <><PageIntro title="404" lead={lang === 'ky' ? 'Барак табылган жок.' : lang === 'ru' ? 'Страница не найдена.' : 'Page not found.'} number="404" /><div className="page-end-cta chapter"><a href="/" className="button button--black">Consulteam <Arrow /></a></div></>}
+        {!['/', '/how-it-works', '/types', '/test', '/countries', '/universities', '/exams'].includes(path) && <><PageIntro title="404" lead={lang === 'ky' ? 'Барак табылган жок.' : lang === 'ru' ? 'Страница не найдена.' : 'Page not found.'} number="404" /><div className="page-end-cta chapter"><a href="/" className="button button--black">Consulteam <Arrow /></a></div></>}
       </main>
       <Footer copy={copy} onPrivacy={() => setPrivacyOpen(true)} />
 
