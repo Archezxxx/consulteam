@@ -10,6 +10,7 @@ const TestGate = lazy(() => import('./TestGate'));
 
 const BASE_URL = import.meta.env.BASE_URL || '/';
 const WHATSAPP = '996709694959';
+const LANGUAGE_KEY = 'consulteam-language';
 
 function asset(path) {
   if (!path || path.startsWith('http')) return path || '';
@@ -107,7 +108,7 @@ function Hero({ lang, copy }) {
   const labels = globeLabels[lang];
   useEffect(() => {
     if (!activeCountryId) return;
-    cardRef.current?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'nearest' });
+    cardRef.current?.scrollIntoView({ behavior: 'auto', block: 'center' });
   }, [activeCountryId]);
   const hasWebGL = (() => {
     try {
@@ -135,8 +136,8 @@ function Hero({ lang, copy }) {
           <button type="button" className="globe-card-close" onClick={() => setActiveCountryId(null)} aria-label={labels.close}>×</button>
           <h2>{activeCountry.names[lang]}</h2>
           <dl>
-            <div><dt>{copy.destinations.tuition}</dt><dd>{activeCountry.tuition}</dd></div>
-            <div><dt>{copy.destinations.living}</dt><dd>{activeCountry.living}</dd></div>
+            <div><dt>{copy.destinations.tuition}</dt><dd>{activeCountry.tuition[lang]}</dd></div>
+            <div><dt>{copy.destinations.living}</dt><dd>{activeCountry.living[lang]}</dd></div>
             <div><dt>{copy.destinations.universities}</dt><dd>{activeCountry.universities.length}</dd></div>
           </dl>
           <a href={`/countries/${activeCountry.id}`}>{labels.more}<Arrow /></a>
@@ -245,9 +246,9 @@ function CountryModal({ country, lang, copy, onClose, onPresentation }) {
         <div className="country-modal-body">
           <h2 id="country-title">{name}</h2>
           <div className="country-facts">
-            <div><span>{copy.destinations.tuition}</span><strong>{country.tuition}</strong></div>
-            <div><span>{copy.destinations.living}</span><strong>{country.living}</strong></div>
-            <div><span>{copy.destinations.grants}</span><strong>{country.grants}</strong></div>
+            <div><span>{copy.destinations.tuition}</span><strong>{country.tuition[lang]}</strong></div>
+            <div><span>{copy.destinations.living}</span><strong>{country.living[lang]}</strong></div>
+            <div><span>{copy.destinations.grants}</span><strong>{country.grants[lang]}</strong></div>
           </div>
           <div className="country-universities"><h3>{copy.destinations.universities}</h3><ul>{country.universities.map((university) => <li key={university}>{university}</li>)}</ul></div>
           <div className="modal-actions">
@@ -321,9 +322,9 @@ function CountryPage({ country, lang, copy, onPresentation }) {
     </section>
     <section className="country-page-body chapter" aria-label={name}>
       <div className="country-page-facts">
-        <div><span>{copy.destinations.tuition}</span><strong>{country.tuition}</strong></div>
-        <div><span>{copy.destinations.living}</span><strong>{country.living}</strong></div>
-        <div><span>{copy.destinations.grants}</span><strong>{country.grants}</strong></div>
+        <div><span>{copy.destinations.tuition}</span><strong>{country.tuition[lang]}</strong></div>
+        <div><span>{copy.destinations.living}</span><strong>{country.living[lang]}</strong></div>
+        <div><span>{copy.destinations.grants}</span><strong>{country.grants[lang]}</strong></div>
       </div>
       <p className="country-page-note">{labels.note}</p>
       <div className="country-page-universities">
@@ -400,7 +401,14 @@ function PageLinks({ lang }) {
 }
 
 export default function App() {
-  const [lang, setLang] = useState('ru');
+  const [lang, setLang] = useState(() => {
+    try {
+      const saved = window.localStorage.getItem(LANGUAGE_KEY);
+      return ['ky', 'ru', 'en'].includes(saved) ? saved : 'ru';
+    } catch {
+      return 'ru';
+    }
+  });
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [presentation, setPresentation] = useState(null);
   const [privacyOpen, setPrivacyOpen] = useState(false);
@@ -411,6 +419,7 @@ export default function App() {
 
   useEffect(() => {
     document.documentElement.lang = lang === 'ky' ? 'ky' : lang;
+    try { window.localStorage.setItem(LANGUAGE_KEY, lang); } catch { /* Browsers may disable storage. */ }
   }, [lang]);
 
   useEffect(() => {
