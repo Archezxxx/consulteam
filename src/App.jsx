@@ -1,4 +1,4 @@
-import { lazy, Suspense, useCallback, useEffect, useState } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import CareerQuiz from './CareerQuiz';
 import { saveProffTestResult } from './proffTestApi';
@@ -94,7 +94,21 @@ function GlobeFallback() {
   </svg>;
 }
 
+const globeLabels = {
+  ru: { title: 'Куда можно поехать учиться', hint: 'Выбери страну на глобусе или в списке', more: 'О стране', close: 'Закрыть карточку' },
+  ky: { title: 'Кайда окууга барса болот', hint: 'Өлкөнү глобустан же тизмеден танда', more: 'Өлкө жөнүндө', close: 'Карточканы жабуу' },
+  en: { title: 'Where you can study', hint: 'Choose a country on the globe or from the list', more: 'About the country', close: 'Close country details' },
+};
+
 function Hero({ lang, copy }) {
+  const [activeCountryId, setActiveCountryId] = useState(null);
+  const cardRef = useRef(null);
+  const activeCountry = countries.find((country) => country.id === activeCountryId);
+  const labels = globeLabels[lang];
+  useEffect(() => {
+    if (!activeCountryId) return;
+    cardRef.current?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'nearest' });
+  }, [activeCountryId]);
   const hasWebGL = (() => {
     try {
       const canvas = document.createElement('canvas');
@@ -111,7 +125,23 @@ function Hero({ lang, copy }) {
         <a className="button button--black hero-cta-desktop" href="/test">{copy.hero.primary}<Arrow /></a>
         <a className="hero-secondary" href="/countries">{copy.hero.secondary}<Arrow /></a>
       </div>
-      <div className="hero-shape-wrap"><GlobeFallback />{hasWebGL && <Suspense fallback={null}><CareerScene /></Suspense>}</div>
+      <div className="hero-map">
+        <div className="hero-shape-wrap"><GlobeFallback />{hasWebGL && <Suspense fallback={null}><CareerScene selectedId={activeCountryId} onCountrySelect={setActiveCountryId} /></Suspense>}</div>
+        <div className="globe-prompt"><strong>{labels.title}</strong><span>{labels.hint}</span></div>
+        <div className="globe-country-list" role="group" aria-label={labels.title}>
+          {countries.map((country) => <button key={country.id} type="button" aria-pressed={activeCountryId === country.id} onClick={() => setActiveCountryId(country.id)}>{country.names[lang]}</button>)}
+        </div>
+        {activeCountry ? <article ref={cardRef} className="globe-country-card" aria-live="polite" aria-label={activeCountry.names[lang]}>
+          <button type="button" className="globe-card-close" onClick={() => setActiveCountryId(null)} aria-label={labels.close}>×</button>
+          <h2>{activeCountry.names[lang]}</h2>
+          <dl>
+            <div><dt>{copy.destinations.tuition}</dt><dd>{activeCountry.tuition}</dd></div>
+            <div><dt>{copy.destinations.living}</dt><dd>{activeCountry.living}</dd></div>
+            <div><dt>{copy.destinations.universities}</dt><dd>{activeCountry.universities.length}</dd></div>
+          </dl>
+          <a href={`/countries/${activeCountry.id}`}>{labels.more}<Arrow /></a>
+        </article> : null}
+      </div>
       <a className="button button--black hero-cta-mobile" href="/test">{copy.hero.primary}<Arrow /></a>
     </section>
   );
@@ -199,7 +229,7 @@ function PresentationViewer({ country, lang, onClose }) {
 
 function CountryModal({ country, lang, copy, onClose, onPresentation }) {
   const name = country.names[lang];
-  const message = encodeURIComponent(`${lang === 'ky' ? 'Салам! Мага' : lang === 'ru' ? 'Здравствуйте! Меня интересует обучение в' : 'Hello! I am interested in studying in'} ${name}.`);
+  const message = countryInterestMessage(lang, name);
 
   useEffect(() => {
     const onKey = (event) => event.key === 'Escape' && onClose();
@@ -222,6 +252,7 @@ function CountryModal({ country, lang, copy, onClose, onPresentation }) {
           <div className="country-universities"><h3>{copy.destinations.universities}</h3><ul>{country.universities.map((university) => <li key={university}>{university}</li>)}</ul></div>
           <div className="modal-actions">
             {country.presentation ? <button type="button" className="button button--soft" onClick={() => onPresentation(country)}>{copy.destinations.presentation}</button> : null}
+            <a className="button button--soft" href={`/countries/${country.id}`}>{globeLabels[lang].more}<Arrow /></a>
             <a className="button button--black" href={`https://wa.me/${WHATSAPP}?text=${message}`} target="_blank" rel="noreferrer">{copy.destinations.ask}</a>
           </div>
         </div>
@@ -257,6 +288,54 @@ function DestinationSection({ lang, copy, onSelect }) {
       </div>
     </section>
   );
+}
+
+const countryPageLabels = {
+  ru: { back: 'Все страны', study: 'Обучение в', universities: 'Университеты из презентаций', allUniversities: 'Смотреть университеты', note: 'Стоимость и условия зависят от программы и года поступления. Консультант уточнит актуальные варианты.' },
+  ky: { back: 'Бардык өлкөлөр', study: 'Окуу өлкөсү:', universities: 'Презентациялардагы университеттер', allUniversities: 'Университеттерди көрүү', note: 'Баалар жана шарттар программага жана кабыл алуу жылына жараша өзгөрөт. Кеңешчи актуалдуу варианттарды тактайт.' },
+  en: { back: 'All countries', study: 'Study in', universities: 'Universities in our presentations', allUniversities: 'View universities', note: 'Costs and admission terms depend on the programme and intake year. An adviser will confirm current options.' },
+};
+
+function countryInterestMessage(lang, name) {
+  const text = lang === 'ky'
+    ? `Салам! Мага ушул өлкөдө окуу тууралуу маалымат керек: ${name}.`
+    : lang === 'ru'
+      ? `Здравствуйте! Меня интересует обучение в стране: ${name}.`
+      : `Hello! I am interested in studying in ${name}.`;
+  return encodeURIComponent(text);
+}
+
+function CountryPage({ country, lang, copy, onPresentation }) {
+  const labels = countryPageLabels[lang];
+  const name = country.names[lang];
+  const message = countryInterestMessage(lang, name);
+  return <>
+    <section className="country-page-hero chapter" id="top">
+      <div className="country-page-heading">
+        <a href="/countries" className="country-back"><Arrow back />{labels.back}</a>
+        <p>{labels.study}</p>
+        <h1>{name}</h1>
+        <span>{copy.destinations.intro}</span>
+      </div>
+      <img src={asset(country.image)} alt={name} />
+    </section>
+    <section className="country-page-body chapter" aria-label={name}>
+      <div className="country-page-facts">
+        <div><span>{copy.destinations.tuition}</span><strong>{country.tuition}</strong></div>
+        <div><span>{copy.destinations.living}</span><strong>{country.living}</strong></div>
+        <div><span>{copy.destinations.grants}</span><strong>{country.grants}</strong></div>
+      </div>
+      <p className="country-page-note">{labels.note}</p>
+      <div className="country-page-universities">
+        <div><h2>{labels.universities}</h2><a href={`/universities#study-${country.id}`}>{labels.allUniversities}<Arrow /></a></div>
+        <ul>{country.universities.map((university) => <li key={university}>{university}</li>)}</ul>
+      </div>
+      <div className="country-page-actions">
+        {country.presentation ? <button type="button" className="button button--soft" onClick={() => onPresentation(country)}>{copy.destinations.presentation}<Arrow /></button> : null}
+        <a className="button button--black" href={`https://wa.me/${WHATSAPP}?text=${message}`} target="_blank" rel="noreferrer">{copy.destinations.ask}<Arrow /></a>
+      </div>
+    </section>
+  </>;
 }
 
 function ExamsSection({ copy }) {
@@ -327,6 +406,7 @@ export default function App() {
   const [privacyOpen, setPrivacyOpen] = useState(false);
   const [submission, setSubmission] = useState(null);
   const path = window.location.pathname.replace(/\/$/, '') || '/';
+  const countryPage = countries.find((country) => path === `/countries/${country.id}`);
   const copy = content[lang];
 
   useEffect(() => {
@@ -354,9 +434,10 @@ export default function App() {
         {path === '/types' && <><PageIntro title={pageTitles[lang].types} lead={copy.types.intro} number="02" /><TypeSection lang={lang} copy={copy} /><div className="page-end-cta chapter"><a href="/test" className="button button--black">{copy.hero.primary}<Arrow /></a></div></>}
         {path === '/test' && <><PageIntro title={pageTitles[lang].test} lead={copy.quiz.intro} number="TEST" />{submission ? <CareerQuiz lang={lang} copy={copy} onComplete={(scores) => saveProffTestResult(submission, scores)} /> : <Suspense fallback={<section className="test-gate chapter" aria-busy="true" />}><TestGate lang={lang} onRegistered={setSubmission} /></Suspense>}</>}
         {path === '/countries' && <><PageIntro title={pageTitles[lang].countries} lead={copy.destinations.intro} number="03" /><DestinationSection lang={lang} copy={copy} onSelect={setSelectedCountry} /><CtaSection copy={copy} /></>}
+        {countryPage && <CountryPage country={countryPage} lang={lang} copy={copy} onPresentation={openPresentation} />}
         {path === '/universities' && <UniversityDirectory lang={lang} />}
         {path === '/exams' && <><PageIntro title={pageTitles[lang].exams} lead={copy.exams.intro} number="04" /><ExamsSection copy={copy} /><CtaSection copy={copy} /></>}
-        {!['/', '/how-it-works', '/types', '/test', '/countries', '/universities', '/exams'].includes(path) && <><PageIntro title="404" lead={lang === 'ky' ? 'Барак табылган жок.' : lang === 'ru' ? 'Страница не найдена.' : 'Page not found.'} number="404" /><div className="page-end-cta chapter"><a href="/" className="button button--black">Consulteam <Arrow /></a></div></>}
+        {!countryPage && !['/', '/how-it-works', '/types', '/test', '/countries', '/universities', '/exams'].includes(path) && <><PageIntro title="404" lead={lang === 'ky' ? 'Барак табылган жок.' : lang === 'ru' ? 'Страница не найдена.' : 'Page not found.'} number="404" /><div className="page-end-cta chapter"><a href="/" className="button button--black">Consulteam <Arrow /></a></div></>}
       </main>
       <Footer copy={copy} onPrivacy={() => setPrivacyOpen(true)} />
 

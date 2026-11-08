@@ -1,8 +1,9 @@
-import { Suspense, useMemo, useRef } from 'react';
+import { Suspense, useEffect, useMemo, useRef } from 'react';
 import { Canvas, useFrame, useLoader } from '@react-three/fiber';
 import { Box3, BackSide, BufferAttribute, CanvasTexture, Color, DoubleSide, Mesh, MeshBasicMaterial, MeshStandardMaterial, PlaneGeometry, RepeatWrapping, SRGBColorSpace, TextureLoader, Vector3 } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js';
+import { countryAt, countryOverlay, destinationCenters, lonLatToPoint, pointToLonLat } from './destinationMap';
 
 const earthPaths = [
   '/models/earth/albedo.webp',
@@ -98,10 +99,14 @@ function addBrandMark(mesh, logoImage) {
   }
 }
 
-function Globe({ reducedMotion }) {
+function Globe({ reducedMotion, selectedId, onCountrySelect }) {
+  const globe = useRef(null);
   const surface = useRef(null);
   const clouds = useRef(null);
   const [albedo, bump, cloudMask, night] = useLoader(TextureLoader, earthPaths);
+  const overlay = useMemo(() => countryOverlay(selectedId), [selectedId]);
+
+  useEffect(() => () => overlay.dispose(), [overlay]);
 
   useMemo(() => {
     albedo.colorSpace = SRGBColorSpace;
@@ -113,17 +118,47 @@ function Globe({ reducedMotion }) {
   }, [albedo, bump, cloudMask, night]);
 
   useFrame((_, delta) => {
-    if (reducedMotion) return;
     const step = Math.min(delta, 0.05);
-    if (surface.current) surface.current.rotation.y += step * 0.07;
-    if (clouds.current) clouds.current.rotation.y += step * 0.09;
+    if (globe.current) {
+      const targetTilt = selectedId ? Math.min(0.7, destinationCenters[selectedId][1] * Math.PI / 180 * 0.85) : 0.12;
+      const difference = targetTilt - globe.current.rotation.x;
+      globe.current.rotation.x += reducedMotion ? difference : difference * Math.min(1, step * 2.5);
+    }
+    if (surface.current) {
+      if (selectedId) {
+        const longitude = destinationCenters[selectedId][0];
+        const target = -((longitude + 90) * Math.PI) / 180 + 0.35;
+        const difference = Math.atan2(Math.sin(target - surface.current.rotation.y), Math.cos(target - surface.current.rotation.y));
+        surface.current.rotation.y += reducedMotion ? difference : difference * Math.min(1, step * 2.5);
+      } else if (!reducedMotion) surface.current.rotation.y += step * 0.07;
+    }
+    if (clouds.current && !reducedMotion) clouds.current.rotation.y += step * 0.09;
   });
 
-  return <group rotation={[0.12, -0.35, -0.08]}>
-    <mesh ref={surface} rotation={[0, -0.65, 0]}>
-      <sphereGeometry args={[1.72, 64, 48]} />
-      <meshStandardMaterial map={albedo} bumpMap={bump} bumpScale={0.025} emissive="#c8dfff" emissiveMap={night} emissiveIntensity={0.08} roughness={0.9} metalness={0} />
-    </mesh>
+  const chooseAtPoint = (event) => {
+    event.stopPropagation();
+    const [lon, lat] = pointToLonLat(event.object.worldToLocal(event.point.clone()));
+    const id = countryAt(lon, lat);
+    if (id) onCountrySelect(id);
+  };
+
+  return <group ref={globe} rotation={[0.12, -0.35, -0.08]}>
+    <group ref={surface} rotation={[0, -0.65, 0]}>
+      <mesh>
+        <sphereGeometry args={[1.72, 64, 48]} />
+        <meshStandardMaterial map={albedo} bumpMap={bump} bumpScale={0.025} emissive="#c8dfff" emissiveMap={night} emissiveIntensity={0.08} roughness={0.9} metalness={0} />
+      </mesh>
+      <mesh onClick={chooseAtPoint}>
+        <sphereGeometry args={[1.748, 64, 48]} />
+        <meshBasicMaterial map={overlay} transparent depthWrite={false} />
+      </mesh>
+      {Object.entries(destinationCenters).map(([id, [lon, lat]]) => (
+        <mesh key={id} position={lonLatToPoint(lon, lat)} onClick={(event) => { event.stopPropagation(); onCountrySelect(id); }}>
+          <sphereGeometry args={[selectedId === id ? 0.055 : 0.039, 12, 8]} />
+          <meshBasicMaterial color={selectedId === id ? '#ffffff' : '#d8f55a'} />
+        </mesh>
+      ))}
+    </group>
     <mesh ref={clouds} rotation={[0, -0.65, 0]}>
       <sphereGeometry args={[1.735, 48, 32]} />
       <meshStandardMaterial color="#ffffff" alphaMap={cloudMask} transparent opacity={0.48} depthWrite={false} roughness={1} />
@@ -157,7 +192,7 @@ function Aircraft() {
   return <group scale={0.00022} rotation={[0.18, -0.65, 0]}><primitive object={model} /></group>;
 }
 
-function World({ reducedMotion }) {
+function World({ reducedMotion, selectedId, onCountrySelect }) {
   const aircraft = useRef(null);
 
   useFrame(({ clock }) => {
@@ -169,7 +204,7 @@ function World({ reducedMotion }) {
   });
 
   return <group>
-    <Globe reducedMotion={reducedMotion} />
+    <Globe reducedMotion={reducedMotion} selectedId={selectedId} onCountrySelect={onCountrySelect} />
     <mesh rotation={[0.82, 0, -0.12]}><torusGeometry args={[2.3, 0.009, 8, 160]} /><meshBasicMaterial color="#c6e866" transparent opacity={0.85} /></mesh>
     <group ref={aircraft}><Aircraft /></group>
     <mesh position={[-2.22, 0.9, -0.4]}><sphereGeometry args={[0.045, 12, 8]} /><meshBasicMaterial color="#d8f55a" /></mesh>
@@ -177,13 +212,13 @@ function World({ reducedMotion }) {
   </group>;
 }
 
-export default function CareerScene() {
+export default function CareerScene({ selectedId, onCountrySelect }) {
   const reducedMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   return <div className="career-scene" aria-hidden="true">
     <Canvas dpr={[1, 1.5]} camera={{ position: [0, 0, 7.9], fov: 39 }} gl={{ antialias: true, alpha: true }} frameloop={reducedMotion ? 'demand' : 'always'}>
       <ambientLight intensity={2.2} />
       <directionalLight position={[3, 4, 6]} intensity={2.15} />
-      <Suspense fallback={null}><World reducedMotion={reducedMotion} /></Suspense>
+      <Suspense fallback={null}><World reducedMotion={reducedMotion} selectedId={selectedId} onCountrySelect={onCountrySelect} /></Suspense>
     </Canvas>
   </div>;
 }
