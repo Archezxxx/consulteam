@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useMemo, useRef } from 'react';
+import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { Canvas, useFrame, useLoader } from '@react-three/fiber';
 import { Box3, BackSide, BufferAttribute, CanvasTexture, Color, DoubleSide, Mesh, MeshBasicMaterial, MeshStandardMaterial, PlaneGeometry, RepeatWrapping, SRGBColorSpace, TextureLoader, Vector3 } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
@@ -194,10 +194,12 @@ function Aircraft() {
 
 function World({ reducedMotion, selectedId, onCountrySelect }) {
   const aircraft = useRef(null);
+  const aircraftAngle = useRef(1.05);
 
-  useFrame(({ clock }) => {
+  useFrame((_, delta) => {
     if (!aircraft.current) return;
-    const angle = reducedMotion ? 1.05 : clock.elapsedTime * 0.25 + 1.05;
+    if (!reducedMotion) aircraftAngle.current += Math.min(delta, 0.05) * 0.25;
+    const angle = aircraftAngle.current;
     aircraft.current.position.set(1.95 * Math.cos(angle), 1.66 * Math.sin(angle), 0.5 + 0.7 * Math.sin(angle + 0.6));
     aircraft.current.rotation.z = angle - Math.PI / 2;
     aircraft.current.rotation.y = -0.18 + 0.16 * Math.sin(angle);
@@ -213,9 +215,31 @@ function World({ reducedMotion, selectedId, onCountrySelect }) {
 }
 
 export default function CareerScene({ selectedId, onCountrySelect }) {
+  const container = useRef(null);
+  const [visible, setVisible] = useState(false);
   const reducedMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  return <div className="career-scene" aria-hidden="true">
-    <Canvas dpr={[1, 1.5]} camera={{ position: [0, 0, 7.9], fov: 39 }} gl={{ antialias: true, alpha: true }} frameloop={reducedMotion ? 'demand' : 'always'}>
+  useEffect(() => {
+    const element = container.current;
+    if (!element) return undefined;
+    if (!('IntersectionObserver' in window)) {
+      setVisible(true);
+      return undefined;
+    }
+    let intersecting = false;
+    const updateVisibility = () => setVisible(intersecting && document.visibilityState === 'visible');
+    const observer = new IntersectionObserver(([entry]) => {
+      intersecting = entry.isIntersecting;
+      updateVisibility();
+    }, { threshold: 0.01 });
+    observer.observe(element);
+    document.addEventListener('visibilitychange', updateVisibility);
+    return () => {
+      observer.disconnect();
+      document.removeEventListener('visibilitychange', updateVisibility);
+    };
+  }, []);
+  return <div ref={container} className="career-scene" aria-hidden="true">
+    <Canvas dpr={[1, 1.5]} camera={{ position: [0, 0, 7.9], fov: 39 }} gl={{ antialias: true, alpha: true }} frameloop={visible && !reducedMotion ? 'always' : 'demand'}>
       <ambientLight intensity={2.2} />
       <directionalLight position={[3, 4, 6]} intensity={2.15} />
       <Suspense fallback={null}><World reducedMotion={reducedMotion} selectedId={selectedId} onCountrySelect={onCountrySelect} /></Suspense>

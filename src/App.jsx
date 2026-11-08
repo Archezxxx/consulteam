@@ -103,6 +103,16 @@ const globeLabels = {
 
 function Hero({ lang, copy }) {
   const [activeCountryId, setActiveCountryId] = useState(null);
+  const [hasWebGL] = useState(() => {
+    try {
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('webgl2') || canvas.getContext('webgl');
+      context?.getExtension('WEBGL_lose_context')?.loseContext();
+      return Boolean(context);
+    } catch {
+      return false;
+    }
+  });
   const cardRef = useRef(null);
   const activeCountry = countries.find((country) => country.id === activeCountryId);
   const labels = globeLabels[lang];
@@ -110,14 +120,6 @@ function Hero({ lang, copy }) {
     if (!activeCountryId) return;
     cardRef.current?.scrollIntoView({ behavior: 'auto', block: 'center' });
   }, [activeCountryId]);
-  const hasWebGL = (() => {
-    try {
-      const canvas = document.createElement('canvas');
-      return Boolean(canvas.getContext('webgl2') || canvas.getContext('webgl'));
-    } catch {
-      return false;
-    }
-  })();
   return (
     <section id="top" className="hero chapter chapter--yellow">
       <div className="hero-copy">

@@ -46,8 +46,8 @@ export function countryAt(lon, lat) {
 
 export function countryOverlay(activeId) {
   const canvas = document.createElement('canvas');
-  canvas.width = 2048;
-  canvas.height = 1024;
+  canvas.width = 1024;
+  canvas.height = 512;
   const context = canvas.getContext('2d');
 
   for (const [id, polygons] of Object.entries(borders)) {
@@ -67,10 +67,10 @@ export function countryOverlay(activeId) {
       context.fill('evenodd');
       context.lineJoin = 'round';
       context.strokeStyle = 'rgba(19,49,104,.88)';
-      context.lineWidth = active ? 13 : 10;
+      context.lineWidth = active ? 6.5 : 5;
       context.stroke();
       context.strokeStyle = active ? '#ffffff' : '#d8f55a';
-      context.lineWidth = active ? 8 : 6;
+      context.lineWidth = active ? 4 : 3;
       context.stroke();
     }
   }
