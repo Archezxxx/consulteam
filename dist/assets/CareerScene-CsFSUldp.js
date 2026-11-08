@@ -1,4 +1,4 @@
-import{r as Fe,g as Ny,j as tt}from"./index-qNo83BMg.js";/**
+import{r as Fe,g as Ny,j as tt}from"./index-7HnGjlDz.js";/**
  * @license
  * Copyright 2010-2023 Three.js Authors
  * SPDX-License-Identifier: MIT
