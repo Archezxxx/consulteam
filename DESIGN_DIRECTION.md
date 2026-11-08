@@ -56,6 +56,10 @@ On this page, the student's three-letter Holland code becomes a sequence of brig
 
 The live thing is the full 15-question RIASEC test. It works on a phone, is keyboard accessible and produces a ranked profile without sending answers to a server.
 
+## Aircraft livery
+
+The existing 3D aircraft keeps its detailed shape. Its livery uses a white fuselage, cobalt nose and vertical tail, navy underside and wordmark, and small lime wing tips. The Consulteam monogram appears in white on both sides of the tail. These large colour fields remain recognizable while the aircraft is small and moving around the globe.
+
 ## Layout system
 
 - One 12-column grid with 16–28px equal outer margins
