@@ -131,7 +131,17 @@ export default function TestGate({ lang, onRegistered }) {
         }),
       });
       if (!response.ok) throw new Error('intake failed');
-      onRegistered(await response.json());
+      onRegistered({
+        ...await response.json(),
+        student: {
+          full_name: data.full_name.trim(),
+          phone: validPhone,
+          email: data.email?.trim() || '',
+          school: data.school?.trim() || '',
+          grade: data.grade?.trim() || '',
+        },
+        submittedAt: new Date().toISOString(),
+      });
     } catch {
       setError(t.error);
     } finally {

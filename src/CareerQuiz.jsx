@@ -14,12 +14,13 @@ function ArrowIcon({ direction = 'right' }) {
   );
 }
 
-export default function CareerQuiz({ lang, copy, onComplete }) {
+export default function CareerQuiz({ lang, copy, submission, onComplete }) {
   const [screen, setScreen] = useState('intro');
   const [current, setCurrent] = useState(0);
   const [answers, setAnswers] = useState({});
   const [showError, setShowError] = useState(false);
   const [saveState, setSaveState] = useState('idle');
+  const [downloadState, setDownloadState] = useState('idle');
   const quizRef = useRef(null);
   const t = copy.quiz;
   const profiles = riasec[lang];
@@ -91,6 +92,18 @@ export default function CareerQuiz({ lang, copy, onComplete }) {
     setScreen('questions');
     setShowError(false);
     scrollToQuiz();
+  };
+
+  const downloadCertificate = async () => {
+    setDownloadState('generating');
+    try {
+      const { downloadCertificatePdf } = await import('./certificatePdf');
+      await downloadCertificatePdf({ submission, scores, answers, lang });
+      setDownloadState('idle');
+    } catch (error) {
+      console.error('Certificate download failed', error);
+      setDownloadState('error');
+    }
   };
 
   const total = Object.values(scores).reduce((sum, value) => sum + value, 0) || 1;
@@ -192,6 +205,15 @@ export default function CareerQuiz({ lang, copy, onComplete }) {
                 </div>
 
                 <div className="result-body">
+                  <div className="result-download">
+                    <div>
+                      <strong>{lang === 'ky' ? 'Жеке жыйынтыгың даяр' : lang === 'ru' ? 'Твой персональный результат готов' : 'Your personal result is ready'}</strong>
+                      <p>{lang === 'ky' ? 'Күбөлүктө сенин маалыматтарың, 15 жооп, 6 өлкөдөгү университеттер жана ылайыктуу багыттар бар.' : lang === 'ru' ? 'В PDF — твои данные, 15 ответов, университеты в 6 странах и подходящие направления.' : 'The PDF includes your details, 15 answers, universities in 6 countries and matching fields.'}</p>
+                      <small>{lang === 'ky' ? 'PDF файлыңда жеке байланыш маалыматтарың бар.' : lang === 'ru' ? 'PDF содержит твои контактные данные.' : 'The PDF contains your contact details.'}</small>
+                    </div>
+                    <button type="button" className="button button--blue" onClick={downloadCertificate} disabled={downloadState === 'generating'}>{downloadState === 'generating' ? (lang === 'ky' ? 'Даярдалууда…' : lang === 'ru' ? 'Готовим PDF…' : 'Preparing PDF…') : t.print}</button>
+                  </div>
+                  {downloadState === 'error' && <p className="result-save-note result-save-note--error" role="alert">{lang === 'ky' ? 'PDF жүктөлгөн жок. Кайра аракет кылыңыз.' : lang === 'ru' ? 'Не удалось скачать PDF. Попробуйте ещё раз.' : 'Could not download the PDF. Please try again.'}</p>}
                   <section className="score-section" aria-labelledby="score-heading">
                     <div className="result-section-heading">
                       <h4 id="score-heading">{t.chartTitle}</h4>
@@ -267,7 +289,7 @@ export default function CareerQuiz({ lang, copy, onComplete }) {
                   {saveState === 'error' && <p className="result-save-note result-save-note--error" role="alert">{lang === 'ky' ? 'Жыйынтык сакталган жок. Кайра аракет кыл.' : lang === 'ru' ? 'Результат не сохранился. Попробуй ещё раз.' : 'The result could not be saved. Try again.'} <button type="button" onClick={() => { setSaveState('saving'); Promise.resolve(onComplete?.(scores)).then(() => setSaveState('saved')).catch(() => setSaveState('error')); }}>{lang === 'ky' ? 'Кайталоо' : lang === 'ru' ? 'Повторить' : 'Retry'}</button></p>}
                   <div className="result-actions">
                     <button type="button" className="text-button" onClick={restart}>{t.retake}</button>
-                    <button type="button" className="button button--outline" onClick={() => window.print()}>{t.print}</button>
+                    <button type="button" className="button button--outline" onClick={downloadCertificate} disabled={downloadState === 'generating'}>{downloadState === 'generating' ? (lang === 'ky' ? 'Даярдалууда…' : lang === 'ru' ? 'Готовим PDF…' : 'Preparing PDF…') : t.print}</button>
                     <a className="button button--blue" href={whatsappHref} target="_blank" rel="noreferrer">{t.consult}<ArrowIcon /></a>
                   </div>
                 </div>

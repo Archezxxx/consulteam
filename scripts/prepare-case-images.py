@@ -56,7 +56,11 @@ def main() -> None:
                 photo.thumbnail((1800, 1800), Image.Resampling.LANCZOS)
                 output = output_root / f"{name}.webp"
                 photo.save(output, "WEBP", quality=80, method=6)
-                print(f"{name}: {photo.width}x{photo.height}, {output.stat().st_size:,} bytes")
+                mobile = photo.copy()
+                mobile.thumbnail((720, 720), Image.Resampling.LANCZOS)
+                mobile_output = output_root / f"{name}-mobile.webp"
+                mobile.save(mobile_output, "WEBP", quality=76, method=6)
+                print(f"{name}: {output.stat().st_size:,} bytes, mobile {mobile_output.stat().st_size:,} bytes")
 
 
 if __name__ == "__main__":

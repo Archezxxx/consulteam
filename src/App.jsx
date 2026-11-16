@@ -106,6 +106,7 @@ const globeLabels = {
 
 function Hero({ lang, copy }) {
   const [activeCountryId, setActiveCountryId] = useState(null);
+  const [sceneReady, setSceneReady] = useState(false);
   const [hasWebGL] = useState(() => {
     try {
       const canvas = document.createElement('canvas');
@@ -117,12 +118,28 @@ function Hero({ lang, copy }) {
     }
   });
   const cardRef = useRef(null);
+  const sceneHost = useRef(null);
   const activeCountry = countries.find((country) => country.id === activeCountryId);
   const labels = globeLabels[lang];
   useEffect(() => {
     if (!activeCountryId) return;
     cardRef.current?.scrollIntoView({ behavior: 'auto', block: 'center' });
   }, [activeCountryId]);
+  useEffect(() => {
+    if (!hasWebGL || !sceneHost.current) return undefined;
+    if (!('IntersectionObserver' in window)) {
+      setSceneReady(true);
+      return undefined;
+    }
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        setSceneReady(true);
+        observer.disconnect();
+      }
+    }, { rootMargin: '150px' });
+    observer.observe(sceneHost.current);
+    return () => observer.disconnect();
+  }, [hasWebGL]);
   return (
     <section id="top" className="hero chapter chapter--yellow">
       <div className="hero-copy">
@@ -132,7 +149,7 @@ function Hero({ lang, copy }) {
         <a className="hero-secondary" href="/countries">{copy.hero.secondary}<Arrow /></a>
       </div>
       <div className="hero-map">
-        <div className="hero-shape-wrap"><GlobeFallback />{hasWebGL && <Suspense fallback={null}><CareerScene selectedId={activeCountryId} onCountrySelect={setActiveCountryId} /></Suspense>}</div>
+        <div className="hero-shape-wrap" ref={sceneHost}><GlobeFallback />{hasWebGL && sceneReady && <Suspense fallback={null}><CareerScene selectedId={activeCountryId} onCountrySelect={setActiveCountryId} /></Suspense>}</div>
         <div className="globe-prompt"><strong>{labels.title}</strong><span>{labels.hint}</span></div>
         <div className="globe-country-list" role="group" aria-label={labels.title}>
           {countries.map((country) => <button key={country.id} type="button" aria-pressed={activeCountryId === country.id} onClick={() => setActiveCountryId(country.id)}>{country.names[lang]}</button>)}
@@ -447,7 +464,7 @@ export default function App() {
         {path === '/' && <><Hero lang={lang} copy={copy} /><CasesPreview lang={lang} /><PageLinks lang={lang} /><CtaSection copy={copy} /></>}
         {path === '/how-it-works' && <><PageIntro title={pageTitles[lang].route} lead={copy.approach.intro} number="01" /><RouteSection copy={copy} /><CtaSection copy={copy} /></>}
         {path === '/types' && <><PageIntro title={pageTitles[lang].types} lead={copy.types.intro} number="02" /><TypeSection lang={lang} copy={copy} /><div className="page-end-cta chapter"><a href="/test" className="button button--black">{copy.hero.primary}<Arrow /></a></div></>}
-        {path === '/test' && <><PageIntro title={pageTitles[lang].test} lead={copy.quiz.intro} number="TEST" />{submission ? <CareerQuiz lang={lang} copy={copy} onComplete={(scores) => saveProffTestResult(submission, scores)} /> : <Suspense fallback={<section className="test-gate chapter" aria-busy="true" />}><TestGate lang={lang} onRegistered={setSubmission} /></Suspense>}</>}
+        {path === '/test' && <><PageIntro title={pageTitles[lang].test} lead={copy.quiz.intro} number="TEST" />{submission ? <CareerQuiz lang={lang} copy={copy} submission={submission} onComplete={(scores) => saveProffTestResult(submission, scores)} /> : <Suspense fallback={<section className="test-gate chapter" aria-busy="true" />}><TestGate lang={lang} onRegistered={setSubmission} /></Suspense>}</>}
         {path === '/countries' && <><PageIntro title={pageTitles[lang].countries} lead={copy.destinations.intro} number="03" /><DestinationSection lang={lang} copy={copy} onSelect={setSelectedCountry} /><CtaSection copy={copy} /></>}
         {countryPage && <CountryPage country={countryPage} lang={lang} copy={copy} onPresentation={openPresentation} />}
         {path === '/universities' && <UniversityDirectory lang={lang} />}

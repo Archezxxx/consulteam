@@ -239,7 +239,7 @@ export default function CareerScene({ selectedId, onCountrySelect }) {
     };
   }, []);
   return <div ref={container} className="career-scene" aria-hidden="true">
-    <Canvas dpr={[1, 1.5]} camera={{ position: [0, 0, 7.9], fov: 39 }} gl={{ antialias: true, alpha: true }} frameloop={visible && !reducedMotion ? 'always' : 'demand'}>
+    <Canvas dpr={window.innerWidth < 600 ? [1, 1.25] : [1, 1.5]} camera={{ position: [0, 0, 7.9], fov: 39 }} gl={{ antialias: true, alpha: true }} frameloop={visible && !reducedMotion ? 'always' : 'demand'}>
       <ambientLight intensity={2.2} />
       <directionalLight position={[3, 4, 6]} intensity={2.15} />
       <Suspense fallback={null}><World reducedMotion={reducedMotion} selectedId={selectedId} onCountrySelect={onCountrySelect} /></Suspense>

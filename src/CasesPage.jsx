@@ -3,6 +3,13 @@ import { caseStories, casesLabels } from './casesData';
 
 const regions = ['all', 'turkey', 'taiwan', 'europe'];
 
+function CaseImage({ src, alt, loading = 'lazy', fetchPriority }) {
+  return <picture>
+    <source media="(max-width: 700px)" srcSet={src.replace('.webp', '-mobile.webp')} />
+    <img src={src} alt={alt} loading={loading} decoding="async" fetchpriority={fetchPriority} />
+  </picture>;
+}
+
 export function CasesPreview({ lang }) {
   const t = casesLabels[lang];
   return <section className="cases-preview chapter" aria-labelledby="cases-preview-title">
@@ -13,9 +20,9 @@ export function CasesPreview({ lang }) {
       <a className="button button--black" href="/cases">{t.seeAll}<span aria-hidden="true">↗</span></a>
     </div>
     <div className="cases-preview-images" aria-hidden="true">
-      <img src={caseStories[0].photos[0].src} alt="" loading="lazy" />
-      <img src={caseStories[1].photos[2].src} alt="" loading="lazy" />
-      <img src={caseStories[2].photos[2].src} alt="" loading="lazy" />
+      <CaseImage src={caseStories[0].photos[0].src} alt="" />
+      <CaseImage src={caseStories[1].photos[2].src} alt="" />
+      <CaseImage src={caseStories[2].photos[2].src} alt="" />
     </div>
   </section>;
 }
@@ -70,9 +77,9 @@ export default function CasesPage({ lang }) {
         <a href="#case-stories" className="cases-scroll-link">{t.seeAll}<span aria-hidden="true">↓</span></a>
       </div>
       <div className="cases-hero-photos" aria-hidden="true">
-        <img src={caseStories[0].photos[0].src} alt="" fetchPriority="high" />
-        <img src={caseStories[1].photos[2].src} alt="" />
-        <img src={caseStories[2].photos[2].src} alt="" />
+        <CaseImage src={caseStories[0].photos[0].src} alt="" loading="eager" fetchPriority="high" />
+        <CaseImage src={caseStories[1].photos[2].src} alt="" loading="eager" />
+        <CaseImage src={caseStories[2].photos[2].src} alt="" loading="eager" />
       </div>
     </section>
 
@@ -88,7 +95,7 @@ export default function CasesPage({ lang }) {
           </div>
           <div className={`case-photo-grid case-photo-grid--${storyIndex % 2 ? 'reverse' : 'forward'}${story.photos.length === 4 ? ' case-photo-grid--four' : ''}`}>
             {story.photos.map((item, index) => <button key={item.src} className="case-photo" type="button" onClick={(event) => openPhoto(event, story.id, index)} aria-label={`${t.gallery}: ${item.caption[lang]}`}>
-              <img src={item.src} alt={item.caption[lang]} loading="lazy" decoding="async" />
+              <CaseImage src={item.src} alt={item.caption[lang]} />
               <span aria-hidden="true">↗</span>
             </button>)}
           </div>
