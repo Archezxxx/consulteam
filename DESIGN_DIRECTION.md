@@ -93,3 +93,15 @@ The hero becomes type first and the route shape second. Colour chapters stay ful
 - No gradients or glass panels
 - No shadows on resting elements
 - No headline longer than two lines
+
+## Cases page direction (November 2026)
+
+Audience: students and parents who want to see real moments behind the study-abroad service. The supplied folder contains photographs but no confirmed names, admission results, scholarships or majors, so the page uses factual photo captions and avoids invented outcomes.
+
+Three directions considered:
+
+- **Editorial photo essay:** a strong opening collage, then four image-led stories with sparse captions. It makes the provided photographs the evidence and gives each trip space to breathe.
+- **Bold campaign collage:** oversized cutout images and scattered stickers across cobalt and lime. It suits social posts but would make a long photo archive harder to scan.
+- **Restrained archive:** small equal thumbnails with filters and detailed metadata. It is easy to browse but cannot show the warmth of the group photographs.
+
+Chosen: editorial photo essay. The visual anchor is an asymmetric three-photo hero in Consulteam cobalt, followed by broad white photo sequences; a lime homepage preview connects the work to the site's bright palette. On mobile, photos form two-column grids and the hero collage stacks beneath the text. The lightbox has keyboard navigation and plain captions. Images are optimized WebP without source metadata; document photos with readable personal information and near-duplicate frames are excluded.

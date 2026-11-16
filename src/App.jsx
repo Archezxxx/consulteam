@@ -3,6 +3,8 @@ import { AnimatePresence, motion } from 'framer-motion';
 import CareerQuiz from './CareerQuiz';
 import { saveProffTestResult } from './proffTestApi';
 import UniversityDirectory from './UniversityDirectory';
+import CasesPage, { CasesPreview } from './CasesPage';
+import { casesLabels } from './casesData';
 import { content, countries, riasec, TYPE_ORDER, typePalette } from './content';
 
 const CareerScene = lazy(() => import('./CareerScene'));
@@ -58,6 +60,7 @@ function Header({ lang, setLang, copy }) {
     ['/types', lang === 'ky' ? 'Типтер' : lang === 'ru' ? 'Типы' : 'Types'],
     ['/countries', copy.nav.destinations],
     ['/universities', lang === 'ky' ? 'Университеттер' : lang === 'ru' ? 'Университеты' : 'Universities'],
+    ['/cases', casesLabels[lang].nav],
     ['/exams', copy.nav.exams],
   ];
 
@@ -421,8 +424,9 @@ export default function App() {
 
   useEffect(() => {
     document.documentElement.lang = lang === 'ky' ? 'ky' : lang;
+    if (path === '/cases') document.title = `${casesLabels[lang].nav} — Consulteam`;
     try { window.localStorage.setItem(LANGUAGE_KEY, lang); } catch { /* Browsers may disable storage. */ }
-  }, [lang]);
+  }, [lang, path]);
 
   useEffect(() => {
     const modalOpen = Boolean(selectedCountry || presentation || privacyOpen);
@@ -440,15 +444,16 @@ export default function App() {
       <a className="skip-link" href="#main">Skip to content</a>
       <Header lang={lang} setLang={setLang} copy={copy} />
       <main id="main">
-        {path === '/' && <><Hero lang={lang} copy={copy} /><PageLinks lang={lang} /><CtaSection copy={copy} /></>}
+        {path === '/' && <><Hero lang={lang} copy={copy} /><CasesPreview lang={lang} /><PageLinks lang={lang} /><CtaSection copy={copy} /></>}
         {path === '/how-it-works' && <><PageIntro title={pageTitles[lang].route} lead={copy.approach.intro} number="01" /><RouteSection copy={copy} /><CtaSection copy={copy} /></>}
         {path === '/types' && <><PageIntro title={pageTitles[lang].types} lead={copy.types.intro} number="02" /><TypeSection lang={lang} copy={copy} /><div className="page-end-cta chapter"><a href="/test" className="button button--black">{copy.hero.primary}<Arrow /></a></div></>}
         {path === '/test' && <><PageIntro title={pageTitles[lang].test} lead={copy.quiz.intro} number="TEST" />{submission ? <CareerQuiz lang={lang} copy={copy} onComplete={(scores) => saveProffTestResult(submission, scores)} /> : <Suspense fallback={<section className="test-gate chapter" aria-busy="true" />}><TestGate lang={lang} onRegistered={setSubmission} /></Suspense>}</>}
         {path === '/countries' && <><PageIntro title={pageTitles[lang].countries} lead={copy.destinations.intro} number="03" /><DestinationSection lang={lang} copy={copy} onSelect={setSelectedCountry} /><CtaSection copy={copy} /></>}
         {countryPage && <CountryPage country={countryPage} lang={lang} copy={copy} onPresentation={openPresentation} />}
         {path === '/universities' && <UniversityDirectory lang={lang} />}
+        {path === '/cases' && <CasesPage lang={lang} />}
         {path === '/exams' && <><PageIntro title={pageTitles[lang].exams} lead={copy.exams.intro} number="04" /><ExamsSection copy={copy} /><CtaSection copy={copy} /></>}
-        {!countryPage && !['/', '/how-it-works', '/types', '/test', '/countries', '/universities', '/exams'].includes(path) && <><PageIntro title="404" lead={lang === 'ky' ? 'Барак табылган жок.' : lang === 'ru' ? 'Страница не найдена.' : 'Page not found.'} number="404" /><div className="page-end-cta chapter"><a href="/" className="button button--black">Consulteam <Arrow /></a></div></>}
+        {!countryPage && !['/', '/how-it-works', '/types', '/test', '/countries', '/universities', '/cases', '/exams'].includes(path) && <><PageIntro title="404" lead={lang === 'ky' ? 'Барак табылган жок.' : lang === 'ru' ? 'Страница не найдена.' : 'Page not found.'} number="404" /><div className="page-end-cta chapter"><a href="/" className="button button--black">Consulteam <Arrow /></a></div></>}
       </main>
       <Footer copy={copy} onPrivacy={() => setPrivacyOpen(true)} />
 
