@@ -2,6 +2,7 @@ import { createServer } from 'vite';
 import { readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
+import { PDFDocument } from 'pdf-lib';
 
 const server = await createServer({ server: { middlewareMode: true }, appType: 'custom' });
 
@@ -29,6 +30,8 @@ try {
         },
         scores, answers, lang, fontBytes, logoBytes,
       });
+      const pdf = await PDFDocument.load(bytes);
+      if (pdf.getPageCount() !== 1) throw new Error(`${lang}/${variant}: expected one page, got ${pdf.getPageCount()}`);
       const path = join(tmpdir(), `consulteam-certificate-${lang}-${variant}.pdf`);
       await writeFile(path, bytes);
       console.log(`${lang}/${variant}: ${path} (${bytes.length} bytes)`);

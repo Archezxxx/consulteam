@@ -2,6 +2,7 @@ import { useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { TYPE_ORDER, questions, riasec, typePalette } from './content';
 import StudyRecommendations from './StudyRecommendations';
+import CareerExperiments from './CareerExperiments';
 
 const emptyScores = () => TYPE_ORDER.reduce((acc, type) => ({ ...acc, [type]: 0 }), {});
 
@@ -208,8 +209,8 @@ export default function CareerQuiz({ lang, copy, submission, onComplete }) {
                   <div className="result-download">
                     <div>
                       <strong>{lang === 'ky' ? 'Жеке жыйынтыгың даяр' : lang === 'ru' ? 'Твой персональный результат готов' : 'Your personal result is ready'}</strong>
-                      <p>{lang === 'ky' ? 'Күбөлүктө сенин маалыматтарың, 15 жооп, 6 өлкөдөгү университеттер жана ылайыктуу багыттар бар.' : lang === 'ru' ? 'В PDF — твои данные, 15 ответов, университеты в 6 странах и подходящие направления.' : 'The PDF includes your details, 15 answers, universities in 6 countries and matching fields.'}</p>
-                      <small>{lang === 'ky' ? 'PDF файлыңда жеке байланыш маалыматтарың бар.' : lang === 'ru' ? 'PDF содержит твои контактные данные.' : 'The PDF contains your contact details.'}</small>
+                      <p>{lang === 'ky' ? 'Бир беттик күбөлүктө атың, кызыгуу профилиң жана карап көрө турган кесиптер бар.' : lang === 'ru' ? 'На одной странице — твоё имя, профиль интересов и профессии, которые стоит изучить.' : 'One page with your name, interest profile and careers to explore.'}</p>
+                      <small>{lang === 'ky' ? 'Өлкөлөр, университеттер жана багыттар төмөндө көрсөтүлгөн.' : lang === 'ru' ? 'Страны, университеты и направления — ниже на этой странице.' : 'Countries, universities and fields are further down this page.'}</small>
                     </div>
                     <button type="button" className="button button--blue" onClick={downloadCertificate} disabled={downloadState === 'generating'}>{downloadState === 'generating' ? (lang === 'ky' ? 'Даярдалууда…' : lang === 'ru' ? 'Готовим PDF…' : 'Preparing PDF…') : t.print}</button>
                   </div>
@@ -281,6 +282,7 @@ export default function CareerQuiz({ lang, copy, submission, onComplete }) {
                     </div>
                   </section>
 
+                  <CareerExperiments lang={lang} topTypes={topThree.map(({ type }) => type)} />
                   <StudyRecommendations lang={lang} topTypes={topThree.map(({ type }) => type)} />
 
                   <p className="quiz-disclaimer">{t.disclaimer}</p>

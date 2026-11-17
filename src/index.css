@@ -542,6 +542,21 @@ button:focus-visible, a:focus-visible { outline: 4px solid var(--paper); outline
 .result-download p { max-width: 620px; margin: 0 0 12px; font-size: 16px; line-height: 1.45; }
 .result-download small { color: #596985; font-size: 13px; }
 .result-download .button { flex: 0 0 auto; }
+.career-experiments { color: #15213b; }
+.career-experiments-eyebrow { margin: 0 0 16px; color: #2454c3; font-size: 12px; font-weight: 800; letter-spacing: .17em; }
+.career-experiments h4 { max-width: 960px; margin: 0 0 20px; font-size: clamp(42px, 5.5vw, 78px); line-height: .99; letter-spacing: -.055em; }
+.career-experiments-intro { max-width: 800px; margin: 0 0 32px; font-size: clamp(18px, 2vw, 22px); line-height: 1.45; }
+.career-experiments-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.career-experiment { min-width: 0; min-height: 245px; padding: 23px; border-top: 5px solid var(--trial-color); background: #f1f5fb; }
+.career-experiment-head { display: flex; align-items: baseline; gap: 13px; min-height: 55px; }
+.career-experiment-head span { color: #164fc9; font-size: 22px; font-weight: 800; }
+.career-experiment h5 { margin: 0; font-size: clamp(22px, 2vw, 30px); line-height: 1.1; overflow-wrap: anywhere; }
+.career-experiment > strong { display: block; margin: 11px 0 8px; color: #2454c3; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; }
+.career-experiment > p { margin: 0; font-size: 16px; line-height: 1.42; }
+.career-experiments-reflection { display: grid; grid-template-columns: minmax(170px, .7fr) minmax(0, 1.3fr); gap: 16px 32px; margin-top: 12px; padding: 26px; background: #1f3265; color: #fff; }
+.career-experiments-reflection > strong { font-size: 22px; line-height: 1.16; }
+.career-experiments-reflection ul { display: grid; gap: 8px; margin: 0; padding-left: 20px; font-size: 16px; }
+.career-experiments-reflection p { grid-column: 2; margin: 0; color: #d7e1f6; font-size: 14px; line-height: 1.4; }
 .score-section, .top-types, .detail-section { margin-bottom: clamp(70px, 9vw, 130px); }
 .result-section-heading h4 {
   max-width: 920px;
@@ -1228,17 +1243,23 @@ button:focus-visible, a:focus-visible { outline: 4px solid var(--paper); outline
 
 .study-preview-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
 .study-preview { display: flex; flex-direction: column; min-width: 0; background: #f2f5fb; color: #15213b; text-decoration: none; border: 1px solid #d9e2f0; transition: transform .2s ease, border-color .2s ease; }
-.study-preview:hover, .study-preview:focus-visible { transform: translateY(-3px); border-color: #164fc9; }
+.study-preview:hover { transform: translateY(-3px); border-color: #164fc9; }
 .study-preview-photo { position: relative; height: 160px; overflow: hidden; background: #dbe7f7; }
 .study-preview-photo img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center 55%; }
 .study-preview-photo > span { position: absolute; left: 12px; bottom: 12px; padding: 5px 9px; background: #fff; color: #164fc9; font-size: 12px; font-weight: 800; }
-.study-preview-copy { position: relative; flex: 1; padding: 18px; }
+.study-preview-copy { position: relative; display: flex; flex-direction: column; flex: 1; padding: 18px; }
 .study-preview-copy h5 { min-height: 2.3em; margin: 0 24px 3px 0; font-size: 20px; line-height: 1.15; }
 .study-preview-copy > p { margin: 0 0 14px; color: #64728a; font-size: 13px; }
 .study-preview-caption { display: block; margin-bottom: 8px; color: #2454c3; font-size: 12px; font-weight: 800; }
 .study-preview-fields { display: flex; flex-wrap: wrap; gap: 6px; }
 .study-preview-fields span { padding: 5px 7px; background: #fff; color: #415779; font-size: 12px; line-height: 1.25; }
-.study-preview-copy b { position: absolute; top: 15px; right: 16px; color: #164fc9; font-size: 20px; font-weight: 500; }
+.study-preview-facts { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: auto 0 0; padding-top: 20px; }
+.study-preview-facts > div:last-child { grid-column: 1 / -1; }
+.study-preview-facts dt { margin-bottom: 4px; color: #5c6e8c; font-size: 12px; font-weight: 700; }
+.study-preview-facts dd { margin: 0; font-size: 13px; line-height: 1.35; overflow-wrap: anywhere; }
+.study-preview-links { display: flex; flex-wrap: wrap; gap: 9px 17px; margin-top: 18px; padding-top: 15px; border-top: 1px solid #d3dfef; }
+.study-preview-links a { color: #164fc9; font-size: 13px; font-weight: 800; text-decoration: underline; text-underline-offset: 3px; }
+.study-preview-links a:focus-visible { outline: 3px solid #164fc9; outline-offset: 3px; }
 .study-preview-footer { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 25px; margin-top: 26px; }
 .study-preview-footer p { flex-basis: 100%; max-width: 800px; margin: 0; color: #53627d; font-size: 14px; }
 .study-preview-footer > span { color: #53627d; font-size: 13px; }
@@ -1255,3 +1276,5 @@ button:focus-visible, a:focus-visible { outline: 4px solid var(--paper); outline
 @media (max-width: 1100px) { .study-university-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 800px) { .study-preview-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .university-directory-lead { display: block; } .university-directory-lead > p { margin-top: 18px; } }
 @media (max-width: 600px) { .study-preview-grid, .study-university-grid { grid-template-columns: 1fr; } .study-preview-photo { height: 185px; } .study-university-photo { height: 190px; } .study-preview-copy h5 { min-height: 0; } .study-preview-footer .button { width: 100%; } .university-directory { padding-top: 52px; } .university-directory-lead { margin-bottom: 28px; } }
+@media (max-width: 850px) { .career-experiments-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 600px) { .career-experiments-grid { grid-template-columns: 1fr; } .career-experiment { min-height: 0; } .career-experiment-head { min-height: 0; } .career-experiments-reflection { grid-template-columns: 1fr; } .career-experiments-reflection p { grid-column: 1; } .study-preview-facts { margin-top: 0; } }
