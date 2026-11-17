@@ -145,7 +145,10 @@ function drawCertificate(page, font, logo, report, t) {
     [t.school, report.student.school],
     [t.grade, report.student.grade],
     [t.date, report.date],
-  ].filter(([, value]) => String(value ?? '').trim());
+  ].filter(([, value]) => {
+    const text = String(value ?? '').trim();
+    return text && text !== '-' && text !== '—';
+  });
   studentFields.forEach(([label, value], index) => {
     field(page, font, label, value, index % 2 === 0 ? 45 : 310, 360 + Math.floor(index / 2) * 55, index % 2 === 0 ? 235 : 240);
   });
@@ -259,7 +262,8 @@ export async function downloadCertificatePdf(data) {
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement('a');
   anchor.href = url;
-  anchor.download = `Consulteam-RIASEC-${data.submission.student.full_name.replace(/[^\p{L}\p{N}]+/gu, '-').slice(0, 60)}.pdf`;
+  const timestamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z$/, 'Z');
+  anchor.download = `Consulteam-RIASEC-${data.submission.student.full_name.replace(/[^\p{L}\p{N}]+/gu, '-').slice(0, 60)}-${timestamp}.pdf`;
   document.body.append(anchor);
   anchor.click();
   anchor.remove();

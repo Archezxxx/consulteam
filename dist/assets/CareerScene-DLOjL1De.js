@@ -1,4 +1,4 @@
-import{r as Ne,g as Ny,j as tt}from"./index-BlP1ALI6.js";/**
+import{r as Ne,g as Ny,j as tt}from"./index-DNGTf6f6.js";/**
  * @license
  * Copyright 2010-2023 Three.js Authors
  * SPDX-License-Identifier: MIT

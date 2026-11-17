@@ -16,13 +16,14 @@ try {
   const fontBytes = await readFile('public/fonts/Onest-Variable.ttf');
   const logoBytes = await readFile('public/consult-team-mark.png');
   for (const lang of ['ru', 'ky', 'en']) {
-    for (const variant of ['full', 'partial', 'sparse']) {
+    for (const variant of ['full', 'partial', 'sparse', 'placeholder']) {
       const bytes = await createCertificatePdf({
         submission: {
           student: {
             full_name: lang === 'ky' ? 'Айдана Өмүрбек кызы' : lang === 'ru' ? 'Александра Абдыкадырова' : 'Alexandra Abdykadyrova',
-            phone: '+996700123456', email: variant === 'full' ? 'student@example.com' : '',
-            school: variant !== 'sparse' ? 'Школа-гимназия № 78' : '', grade: variant === 'full' ? '11' : '',
+            phone: '+996700123456', email: variant === 'full' ? 'student@example.com' : variant === 'placeholder' ? '-' : '',
+            school: variant === 'placeholder' ? '—' : ['full', 'partial'].includes(variant) ? 'Школа-гимназия № 78' : '',
+            grade: variant === 'full' ? '11' : '',
           },
           submittedAt: '2026-11-16T10:00:00.000Z',
         },
