@@ -113,7 +113,7 @@ function footer(page, font, number, total) {
 
 function field(page, font, label, value, x, top, width) {
   drawText(page, font, label.toUpperCase(), x, top, 8.5, MUTED, width);
-  drawFitted(page, font, value || '-', x, top + 17, width, 3, 11.5, 7.5);
+  drawFitted(page, font, value, x, top + 17, width, 3, 11.5, 7.5);
 }
 
 function recommendations(topTypes) {
@@ -139,21 +139,27 @@ function drawCertificate(page, font, logo, report, t) {
   drawText(page, font, t.student, 45, 247, 9, BLUE);
   drawFitted(page, font, report.student.full_name, 45, 264, 505, 3, 27, 13);
   rule(page, 45, 346, 505);
-  field(page, font, t.phone, report.student.phone, 45, 360, 235);
-  field(page, font, t.email, report.student.email, 310, 360, 240);
-  field(page, font, t.school, report.student.school, 45, 415, 235);
-  field(page, font, t.grade, report.student.grade, 310, 415, 240);
-  field(page, font, t.date, report.date, 45, 468, 235);
+  const studentFields = [
+    [t.phone, report.student.phone],
+    [t.email, report.student.email],
+    [t.school, report.student.school],
+    [t.grade, report.student.grade],
+    [t.date, report.date],
+  ].filter(([, value]) => String(value ?? '').trim());
+  studentFields.forEach(([label, value], index) => {
+    field(page, font, label, value, index % 2 === 0 ? 45 : 310, 360 + Math.floor(index / 2) * 55, index % 2 === 0 ? 235 : 240);
+  });
+  const sectionShift = (3 - Math.ceil(studentFields.length / 2)) * 25;
 
-  rectangle(page, 45, 522, 505, 82, PALE);
-  drawText(page, font, t.profile, 60, 536, 9, BLUE);
-  drawText(page, font, report.code, 60, 548, 42, NAVY, 180);
-  drawText(page, font, t.types, 250, 539, 9, MUTED);
-  drawFitted(page, font, report.topTypes.map((type) => `${type} ${riasec[report.lang][type].name}`).join('  /  '), 250, 556, 276, 2, 12, 9.5);
+  rectangle(page, 45, 522 - sectionShift, 505, 82, PALE);
+  drawText(page, font, t.profile, 60, 536 - sectionShift, 9, BLUE);
+  drawText(page, font, report.code, 60, 548 - sectionShift, 42, NAVY, 180);
+  drawText(page, font, t.types, 250, 539 - sectionShift, 9, MUTED);
+  drawFitted(page, font, report.topTypes.map((type) => `${type} ${riasec[report.lang][type].name}`).join('  /  '), 250, 556 - sectionShift, 276, 2, 12, 9.5);
 
-  drawText(page, font, t.scores, 45, 616, 15, INK);
+  drawText(page, font, t.scores, 45, 616 - sectionShift, 15, INK);
   report.ranking.forEach(({ type, score }, index) => {
-    const top = 641 + index * 17;
+    const top = 641 - sectionShift + index * 17;
     rectangle(page, 45, top + 2, 14, 14, typePalette[type]);
     drawText(page, font, type, 49, top + 2, 9, INK, 10);
     drawText(page, font, riasec[report.lang][type].name, 69, top + 2, 10, INK, 135);
@@ -161,7 +167,7 @@ function drawCertificate(page, font, logo, report, t) {
     rectangle(page, 224, top + 6, Math.max(2, (score / report.total) * 270), 6, typePalette[type]);
     drawText(page, font, `${Math.round((score / report.total) * 100)}%`, 502, top + 2, 10, NAVY, 44);
   });
-  drawText(page, font, t.disclaimer, 45, 755, 9, MUTED, 505, 12);
+  drawText(page, font, t.disclaimer, 45, 755 - sectionShift, 9, MUTED, 505, 12);
   footer(page, font, 1, 8);
 }
 
