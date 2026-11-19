@@ -1,8 +1,9 @@
 import { PDFDocument, rgb } from 'pdf-lib';
 import fontkit from '@pdf-lib/fontkit';
-import { questions, riasec, TYPE_ORDER, typePalette } from './content';
+import { countries, questions, riasec, TYPE_ORDER, typePalette } from './content';
 import { careerGroups } from './careerSuggestions';
 import { careerExperiments } from './careerTrialData';
+import { studyFields, studyUniversities, universitiesForCountry } from './studyCatalog';
 
 const PAGE_WIDTH = 595.28;
 const PAGE_HEIGHT = 841.89;
@@ -22,6 +23,11 @@ const labels = {
     trialIntro: 'Попробуй небольшую задачу из повседневной работы. Выбери одну профессию и посмотри, нравится ли тебе сам процесс.',
     trialAction: 'ПОПРОБУЙ', reflection: 'После задания спроси себя',
     reflectionQuestions: ['Было ли интересно?', 'Хочется ли узнать больше?', 'Повторил бы я это ещё раз?'],
+    studyTitle: 'СТРАНЫ И УНИВЕРСИТЕТЫ', part: 'Часть',
+    studyIntro: 'Все вузы из каталога Consulteam, упорядоченные по совпадению направлений с твоим профилем.',
+    tuition: 'Обучение', living: 'Стоимость жизни', grants: 'Гранты и поддержка',
+    fields: 'Направления и факультеты для обсуждения',
+    costNote: 'Цены ориентировочные для страны, не для конкретного вуза. Программы, расходы и условия уточни с консультантом.',
     disclaimer: 'Профориентационный результат показывает интересы. Он не является психологическим диагнозом или гарантией поступления.',
   },
   ky: {
@@ -32,6 +38,11 @@ const labels = {
     trialIntro: 'Күнүмдүк иштин кичине бир бөлүгүн аткарып көр. Бир кесипти тандап, процесстин өзү сага жагаарын байка.',
     trialAction: 'СЫНАП КӨР', reflection: 'Тапшырмадан кийин өзүңө суроо бер',
     reflectionQuestions: ['Кызыктуу болдубу?', 'Дагы билгиң келдиби?', 'Муну кайра кылат белең?'],
+    studyTitle: 'ӨЛКӨЛӨР ЖАНА УНИВЕРСИТЕТТЕР', part: 'Бөлүк',
+    studyIntro: 'Consulteam каталогундагы бардык ЖОЖдор кызыгуу профилиңе ылайык иреттелди.',
+    tuition: 'Окуу акысы', living: 'Жашоо чыгымы', grants: 'Гранттар жана колдоо',
+    fields: 'Талкуулай турган багыттар жана факультеттер',
+    costNote: 'Баалар өлкө боюнча болжолдуу, так университеттин акысы эмес. Программаларды жана шарттарды кеңешчи менен такта.',
     disclaimer: 'Бул жыйынтык кызыгууну көрсөтөт. Психологиялык диагноз же окууга кабыл алуу кепилдиги эмес.',
   },
   en: {
@@ -42,6 +53,11 @@ const labels = {
     trialIntro: 'Try a small part of the everyday work. Choose one career and notice whether you enjoy the process.',
     trialAction: 'TRY THIS', reflection: 'Afterwards, ask yourself',
     reflectionQuestions: ['Did I enjoy it?', 'Do I want to learn more?', 'Would I do it again?'],
+    studyTitle: 'COUNTRIES AND UNIVERSITIES', part: 'Part',
+    studyIntro: 'All institutions in the Consulteam directory, ordered by how well their study fields match your interests.',
+    tuition: 'Tuition', living: 'Living costs', grants: 'Scholarships and support',
+    fields: 'Fields and faculties to discuss',
+    costNote: 'These are country-level estimates, not a specific university quote. Confirm programmes, costs and terms with an adviser.',
     disclaimer: 'This result describes interests. It is not a psychological diagnosis or a guarantee of admission.',
   },
 };
@@ -52,7 +68,8 @@ function pdfColor(hex) {
 }
 
 function wrap(font, value, size, maxWidth) {
-  const words = String(value ?? '').trim().replace(/\s+/g, ' ').split(' ');
+  const words = String(value ?? '').trim().replace(/\s+/g, ' ')
+    .replace(/(\d) (\d{3}(?=\D|$))/g, '$1\u00a0$2').split(' ');
   const lines = [];
   let line = '';
   for (const word of words) {
@@ -98,13 +115,13 @@ function brand(page, font, logo) {
   drawText(page, font, 'Consulteam', 94, 37, 18, '#ffffff', 300);
 }
 
-function footer(page, font, number) {
+function footer(page, font, number, total) {
   rectangle(page, 45, 796, 505, 0.7, '#d5dfed');
   drawText(page, font, 'Consulteam  |  consulteam.edu.kg', 45, 807, 8.5, MUTED);
-  drawText(page, font, `${number} / 2`, 515, 807, 8.5, MUTED, 35);
+  drawText(page, font, `${number} / ${total}`, 505, 807, 8.5, MUTED, 45);
 }
 
-function drawCertificate(page, font, logo, report, t) {
+function drawCertificate(page, font, logo, report, t, totalPages) {
   rectangle(page, 0, 0, PAGE_WIDTH, PAGE_HEIGHT, '#ffffff');
   rectangle(page, 0, 0, PAGE_WIDTH, 211, BLUE);
   brand(page, font, logo);
@@ -147,10 +164,10 @@ function drawCertificate(page, font, logo, report, t) {
     });
   });
   drawText(page, font, t.disclaimer, 45, 762, 8, MUTED, 505, 10);
-  footer(page, font, 1);
+  footer(page, font, 1, totalPages);
 }
 
-function drawPracticePage(page, font, logo, report, t) {
+function drawPracticePage(page, font, logo, report, t, totalPages) {
   rectangle(page, 0, 0, PAGE_WIDTH, PAGE_HEIGHT, '#ffffff');
   rectangle(page, 0, 0, PAGE_WIDTH, 165, NAVY);
   brand(page, font, logo);
@@ -174,10 +191,87 @@ function drawPracticePage(page, font, logo, report, t) {
     const x = 57 + index * 163;
     drawFitted(page, font, question, x, 745, 150, 2, 9.5, 8, '#ffffff');
   });
-  footer(page, font, 2);
+  footer(page, font, 2, totalPages);
 }
 
-export async function createCertificatePdf({ submission, scores, answers, lang = 'ru', fontBytes, logoBytes }) {
+function fieldMatchScore(field, topTypes) {
+  if (field === 'foundation') return 0;
+  return topTypes.reduce((score, type, index) =>
+    score + (studyFields[field].types.includes(type) ? 3 - index : 0), 0);
+}
+
+function countrySections(topTypes) {
+  return countries.flatMap((country) => {
+    const universities = universitiesForCountry(country.id)
+      .map((university, index) => ({
+        university, index,
+        score: university.fields.reduce((sum, field) => sum + fieldMatchScore(field, topTypes), 0),
+        fields: [...university.fields].sort((a, b) =>
+          fieldMatchScore(b, topTypes) - fieldMatchScore(a, topTypes)),
+      }))
+      .sort((a, b) => b.score - a.score || (a.university.qs?.sort ?? Infinity) - (b.university.qs?.sort ?? Infinity) || a.index - b.index);
+    const parts = Math.ceil(universities.length / 3);
+    return Array.from({ length: parts }, (_, part) => ({
+      country, part: part + 1, parts, universities: universities.slice(part * 3, part * 3 + 3),
+    }));
+  });
+}
+
+function drawCountryPage(page, font, logo, report, t, section, photos, pageNumber, totalPages) {
+  const { country, part, parts, universities } = section;
+  rectangle(page, 0, 0, PAGE_WIDTH, PAGE_HEIGHT, '#ffffff');
+  rectangle(page, 0, 0, PAGE_WIDTH, 132, NAVY);
+  brand(page, font, logo);
+  drawText(page, font, t.studyTitle, 45, 75, 9, LIME, 365);
+  drawFitted(page, font, country.names[report.lang], 45, 92, 390, 1, 28, 22, '#ffffff');
+  drawText(page, font, `${t.part} ${part} / ${parts}`, 449, 78, 10, '#ffffff', 100);
+  drawText(page, font, report.code, 492, 98, 16, LIME, 58);
+
+  rectangle(page, 45, 148, 505, 94, PALE);
+  const facts = [
+    [t.tuition, country.tuition[report.lang]],
+    [t.living, country.living[report.lang]],
+    [t.grants, country.grants[report.lang]],
+  ];
+  facts.forEach(([label, value], index) => {
+    const x = 57 + index * 166;
+    drawFitted(page, font, label, x, 158, 148, 2, 8.5, 7.5, BLUE);
+    drawFitted(page, font, value, x, 179, 148, 4, 9.5, 7.5);
+  });
+  drawFitted(page, font, t.studyIntro, 45, 251, 505, 2, 9.5, 8.5, MUTED);
+
+  universities.forEach(({ university, fields }, index) => {
+    const top = 284 + index * 159;
+    rectangle(page, 45, top, 505, 150, PALE);
+    rectangle(page, 45, top, 505, 4, BLUE);
+    const photo = photos.get(university.id);
+    if (photo) page.drawImage(photo, { x: 56, y: PAGE_HEIGHT - top - 136, width: 160, height: 122 });
+    else rectangle(page, 56, top + 14, 160, 122, '#d8e3f4');
+    drawFitted(page, font, university.name, 229, top + 14, 308, 2, 12, 9.5, NAVY);
+    drawText(page, font, university.city, 229, top + 49, 8.5, MUTED, 308);
+    drawText(page, font, t.fields, 229, top + 70, 8, BLUE, 308);
+    drawFitted(page, font, fields.map((field) => studyFields[field].label[report.lang]).join(' / '),
+      229, top + 85, 308, 4, 8.6, 7.4);
+  });
+
+  drawFitted(page, font, t.costNote, 45, 765, 505, 2, 8, 7.5, MUTED);
+  footer(page, font, pageNumber, totalPages);
+}
+
+async function loadUniversityPhotos(doc, universityPhotos) {
+  const pairs = await Promise.all(studyUniversities.map(async (university) => {
+    let bytes = universityPhotos?.[university.id];
+    if (!bytes) {
+      const response = await fetch(`/certificate/universities/${university.id}.jpg`);
+      if (!response.ok) throw new Error(`University image unavailable: ${university.id}`);
+      bytes = await response.arrayBuffer();
+    }
+    return [university.id, await doc.embedJpg(bytes)];
+  }));
+  return new Map(pairs);
+}
+
+export async function createCertificatePdf({ submission, scores, answers, lang = 'ru', fontBytes, logoBytes, universityPhotos }) {
   const student = submission?.student;
   if (!student?.full_name || questions.some((_, index) => !answers[index])) {
     throw new Error('Student name and all 15 answers are required');
@@ -203,9 +297,16 @@ export async function createCertificatePdf({ submission, scores, answers, lang =
   const t = labels[language];
   doc.setTitle(`${t.certificate} - Consulteam - ${student.full_name}`);
   doc.setAuthor('Consulteam');
-  doc.setSubject('RIASEC career orientation result and practical career trials');
-  drawCertificate(doc.addPage([PAGE_WIDTH, PAGE_HEIGHT]), font, logo, report, t);
-  drawPracticePage(doc.addPage([PAGE_WIDTH, PAGE_HEIGHT]), font, logo, report, t);
+  doc.setSubject('RIASEC career orientation result, practical career trials and study options');
+  const sections = countrySections(topTypes);
+  const totalPages = 2 + sections.length;
+  const photos = await loadUniversityPhotos(doc, universityPhotos);
+  drawCertificate(doc.addPage([PAGE_WIDTH, PAGE_HEIGHT]), font, logo, report, t, totalPages);
+  drawPracticePage(doc.addPage([PAGE_WIDTH, PAGE_HEIGHT]), font, logo, report, t, totalPages);
+  sections.forEach((section, index) => drawCountryPage(
+    doc.addPage([PAGE_WIDTH, PAGE_HEIGHT]), font, logo, report, t,
+    section, photos, index + 3, totalPages,
+  ));
   return doc.save();
 }
 
