@@ -28,6 +28,8 @@ const labels = {
     tuition: 'Обучение', living: 'Стоимость жизни', grants: 'Гранты и поддержка',
     fields: 'Направления и факультеты для обсуждения',
     costNote: 'Цены ориентировочные для страны, не для конкретного вуза. Программы, расходы и условия уточни с консультантом.',
+    answersTitle: 'Вопросы и ответы', answersIntro: 'Все 15 вопросов и твои выбранные ответы в порядке прохождения теста.',
+    answerPrefix: 'Ответ:',
     disclaimer: 'Профориентационный результат показывает интересы. Он не является психологическим диагнозом или гарантией поступления.',
   },
   ky: {
@@ -43,6 +45,8 @@ const labels = {
     tuition: 'Окуу акысы', living: 'Жашоо чыгымы', grants: 'Гранттар жана колдоо',
     fields: 'Талкуулай турган багыттар жана факультеттер',
     costNote: 'Баалар өлкө боюнча болжолдуу, так университеттин акысы эмес. Программаларды жана шарттарды кеңешчи менен такта.',
+    answersTitle: 'Суроолор жана жооптор', answersIntro: 'Тесттеги 15 суроо жана сен тандаган жооптор өз тартиби менен берилди.',
+    answerPrefix: 'Жооп:',
     disclaimer: 'Бул жыйынтык кызыгууну көрсөтөт. Психологиялык диагноз же окууга кабыл алуу кепилдиги эмес.',
   },
   en: {
@@ -58,6 +62,8 @@ const labels = {
     tuition: 'Tuition', living: 'Living costs', grants: 'Scholarships and support',
     fields: 'Fields and faculties to discuss',
     costNote: 'These are country-level estimates, not a specific university quote. Confirm programmes, costs and terms with an adviser.',
+    answersTitle: 'Questions and answers', answersIntro: 'All 15 questions and the answers you selected, in the order of the test.',
+    answerPrefix: 'Answer:',
     disclaimer: 'This result describes interests. It is not a psychological diagnosis or a guarantee of admission.',
   },
 };
@@ -271,9 +277,35 @@ async function loadUniversityPhotos(doc, universityPhotos) {
   return new Map(pairs);
 }
 
+function drawAnswersPage(page, font, logo, report, t, part, pageNumber, totalPages) {
+  rectangle(page, 0, 0, PAGE_WIDTH, PAGE_HEIGHT, '#ffffff');
+  rectangle(page, 0, 0, PAGE_WIDTH, 123, NAVY);
+  brand(page, font, logo);
+  drawText(page, font, `RIASEC  /  ${questions.length}`, 45, 76, 9, LIME);
+  drawText(page, font, `${part + 1} / ${Math.ceil(questions.length / 8)}`, 500, 76, 9, '#ffffff', 50);
+  drawFitted(page, font, t.answersTitle, 45, 91, 430, 1, 25, 21, '#ffffff');
+  drawFitted(page, font, t.answersIntro, 45, 141, 505, 2, 10, 9, MUTED);
+
+  questions.slice(part * 8, part * 8 + 8).forEach((question, row) => {
+    const number = part * 8 + row;
+    const top = 185 + row * 74;
+    const selectedType = report.answers[number];
+    const selectedAnswer = question.options[selectedType];
+    rectangle(page, 45, top, 505, 68, PALE);
+    rectangle(page, 45, top, 3, 68, BLUE);
+    drawText(page, font, String(number + 1).padStart(2, '0'), 57, top + 9, 10, BLUE, 24);
+    rectangle(page, 56, top + 39, 19, 19, typePalette[selectedType]);
+    drawText(page, font, selectedType, 61, top + 42, 9, INK, 11);
+    drawFitted(page, font, question.prompt[report.lang], 90, top + 8, 445, 2, 10.5, 9.5);
+    drawFitted(page, font, `${t.answerPrefix} ${selectedAnswer.text[report.lang]}`,
+      90, top + 39, 445, 2, 9.7, 8.7, NAVY);
+  });
+  footer(page, font, pageNumber, totalPages);
+}
+
 export async function createCertificatePdf({ submission, scores, answers, lang = 'ru', fontBytes, logoBytes, universityPhotos }) {
   const student = submission?.student;
-  if (!student?.full_name || questions.some((_, index) => !answers[index])) {
+  if (!student?.full_name || questions.some((question, index) => !question.options[answers[index]])) {
     throw new Error('Student name and all 15 answers are required');
   }
   const language = labels[lang] ? lang : 'ru';
@@ -289,7 +321,7 @@ export async function createCertificatePdf({ submission, scores, answers, lang =
     .sort((a, b) => b.score - a.score || TYPE_ORDER.indexOf(a.type) - TYPE_ORDER.indexOf(b.type));
   const topTypes = ranking.slice(0, 3).map(({ type }) => type);
   const report = {
-    student, ranking, topTypes, code: topTypes.join(''), lang: language,
+    student, answers, ranking, topTypes, code: topTypes.join(''), lang: language,
     groups: careerGroups(topTypes, language),
     total: ranking.reduce((sum, item) => sum + item.score, 0) || 1,
     date: new Intl.DateTimeFormat(language === 'ky' ? 'ky-KG' : language === 'ru' ? 'ru-RU' : 'en-GB', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(submission.submittedAt || Date.now())),
@@ -299,7 +331,8 @@ export async function createCertificatePdf({ submission, scores, answers, lang =
   doc.setAuthor('Consulteam');
   doc.setSubject('RIASEC career orientation result, practical career trials and study options');
   const sections = countrySections(topTypes);
-  const totalPages = 2 + sections.length;
+  const answerPageCount = Math.ceil(questions.length / 8);
+  const totalPages = 2 + sections.length + answerPageCount;
   const photos = await loadUniversityPhotos(doc, universityPhotos);
   drawCertificate(doc.addPage([PAGE_WIDTH, PAGE_HEIGHT]), font, logo, report, t, totalPages);
   drawPracticePage(doc.addPage([PAGE_WIDTH, PAGE_HEIGHT]), font, logo, report, t, totalPages);
@@ -307,6 +340,10 @@ export async function createCertificatePdf({ submission, scores, answers, lang =
     doc.addPage([PAGE_WIDTH, PAGE_HEIGHT]), font, logo, report, t,
     section, photos, index + 3, totalPages,
   ));
+  for (let part = 0; part < answerPageCount; part += 1) {
+    drawAnswersPage(doc.addPage([PAGE_WIDTH, PAGE_HEIGHT]), font, logo, report, t,
+      part, 3 + sections.length + part, totalPages);
+  }
   return doc.save();
 }
 
