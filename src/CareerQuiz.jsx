@@ -209,7 +209,7 @@ export default function CareerQuiz({ lang, copy, submission, onComplete }) {
                   <div className="result-download">
                     <div>
                       <strong>{lang === 'ky' ? 'Жеке жыйынтыгың даяр' : lang === 'ru' ? 'Твой персональный результат готов' : 'Your personal result is ready'}</strong>
-                      <p>{lang === 'ky' ? 'Бир беттик күбөлүктө атың, кызыгуу профилиң жана карап көрө турган кесиптер бар.' : lang === 'ru' ? 'На одной странице — твоё имя, профиль интересов и профессии, которые стоит изучить.' : 'One page with your name, interest profile and careers to explore.'}</p>
+                      <p>{lang === 'ky' ? 'Эки беттик күбөлүктө атың, кызыгуу профилиң, ылайыктуу кесиптер жана аларды сынап көрүү үчүн тапшырмалар бар.' : lang === 'ru' ? 'В двухстраничном PDF — твоё имя, профиль интересов, подходящие профессии и задания, чтобы попробовать их на практике.' : 'The two-page PDF has your name, interest profile, matching careers and practical ways to try them.'}</p>
                       <small>{lang === 'ky' ? 'Өлкөлөр, университеттер жана багыттар төмөндө көрсөтүлгөн.' : lang === 'ru' ? 'Страны, университеты и направления — ниже на этой странице.' : 'Countries, universities and fields are further down this page.'}</small>
                     </div>
                     <button type="button" className="button button--blue" onClick={downloadCertificate} disabled={downloadState === 'generating'}>{downloadState === 'generating' ? (lang === 'ky' ? 'Даярдалууда…' : lang === 'ru' ? 'Готовим PDF…' : 'Preparing PDF…') : t.print}</button>

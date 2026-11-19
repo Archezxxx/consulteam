@@ -31,11 +31,21 @@ try {
         scores, answers, lang, fontBytes, logoBytes,
       });
       const pdf = await PDFDocument.load(bytes);
-      if (pdf.getPageCount() !== 1) throw new Error(`${lang}/${variant}: expected one page, got ${pdf.getPageCount()}`);
+      if (pdf.getPageCount() !== 2) throw new Error(`${lang}/${variant}: expected two pages, got ${pdf.getPageCount()}`);
       const path = join(tmpdir(), `consulteam-certificate-${lang}-${variant}.pdf`);
       await writeFile(path, bytes);
       console.log(`${lang}/${variant}: ${path} (${bytes.length} bytes)`);
     }
+    const alternateScores = { R: 3, I: 30, A: 2, S: 4, E: 25, C: 20 };
+    const alternateBytes = await createCertificatePdf({
+      submission: { student: { full_name: 'Test Student' }, submittedAt: '2026-11-16T10:00:00.000Z' },
+      scores: alternateScores, answers, lang, fontBytes, logoBytes,
+    });
+    const alternatePdf = await PDFDocument.load(alternateBytes);
+    if (alternatePdf.getPageCount() !== 2) throw new Error(`${lang}/alternate: expected two pages`);
+    const alternatePath = join(tmpdir(), `consulteam-certificate-${lang}-alternate.pdf`);
+    await writeFile(alternatePath, alternateBytes);
+    console.log(`${lang}/alternate: ${alternatePath} (${alternateBytes.length} bytes)`);
   }
 } finally {
   await server.close();

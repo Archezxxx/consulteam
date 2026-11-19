@@ -1,4 +1,4 @@
-import{r as Ne,g as Ny,j as tt}from"./index-DZkfXwgg.js";/**
+import{r as Ne,g as Ny,j as tt}from"./index-5vt2-vn5.js";/**
  * @license
  * Copyright 2010-2023 Three.js Authors
  * SPDX-License-Identifier: MIT

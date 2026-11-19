@@ -2,6 +2,7 @@ import { PDFDocument, rgb } from 'pdf-lib';
 import fontkit from '@pdf-lib/fontkit';
 import { questions, riasec, TYPE_ORDER, typePalette } from './content';
 import { careerGroups } from './careerSuggestions';
+import { careerExperiments } from './careerTrialData';
 
 const PAGE_WIDTH = 595.28;
 const PAGE_HEIGHT = 841.89;
@@ -17,18 +18,30 @@ const labels = {
     certificate: 'СЕРТИФИКАТ', subtitle: 'профориентационного теста', student: 'УЧЕНИК',
     date: 'Дата теста', profile: 'ПРОФИЛЬ ИНТЕРЕСОВ', types: 'Ведущие направления',
     scores: 'Результат по шести типам', careers: 'Профессии для изучения',
+    trialTitle: 'Проверь профессию на практике',
+    trialIntro: 'Попробуй небольшую задачу из повседневной работы. Выбери одну профессию и посмотри, нравится ли тебе сам процесс.',
+    trialAction: 'ПОПРОБУЙ', reflection: 'После задания спроси себя',
+    reflectionQuestions: ['Было ли интересно?', 'Хочется ли узнать больше?', 'Повторил бы я это ещё раз?'],
     disclaimer: 'Профориентационный результат показывает интересы. Он не является психологическим диагнозом или гарантией поступления.',
   },
   ky: {
     certificate: 'КҮБӨЛҮК', subtitle: 'кесипке багыт берүү тестинин жыйынтыгы', student: 'ОКУУЧУ',
     date: 'Тесттин датасы', profile: 'КЫЗЫГУУ ПРОФИЛИ', types: 'Негизги багыттар',
     scores: 'Алты тип боюнча жыйынтык', careers: 'Изилдеп көрө турган кесиптер',
+    trialTitle: 'Кесипти иш жүзүндө сынап көр',
+    trialIntro: 'Күнүмдүк иштин кичине бир бөлүгүн аткарып көр. Бир кесипти тандап, процесстин өзү сага жагаарын байка.',
+    trialAction: 'СЫНАП КӨР', reflection: 'Тапшырмадан кийин өзүңө суроо бер',
+    reflectionQuestions: ['Кызыктуу болдубу?', 'Дагы билгиң келдиби?', 'Муну кайра кылат белең?'],
     disclaimer: 'Бул жыйынтык кызыгууну көрсөтөт. Психологиялык диагноз же окууга кабыл алуу кепилдиги эмес.',
   },
   en: {
     certificate: 'CERTIFICATE', subtitle: 'career orientation test result', student: 'STUDENT',
     date: 'Test date', profile: 'INTEREST PROFILE', types: 'Leading directions',
     scores: 'All six interest types', careers: 'Careers to explore',
+    trialTitle: 'Try a career in practice',
+    trialIntro: 'Try a small part of the everyday work. Choose one career and notice whether you enjoy the process.',
+    trialAction: 'TRY THIS', reflection: 'Afterwards, ask yourself',
+    reflectionQuestions: ['Did I enjoy it?', 'Do I want to learn more?', 'Would I do it again?'],
     disclaimer: 'This result describes interests. It is not a psychological diagnosis or a guarantee of admission.',
   },
 };
@@ -85,6 +98,12 @@ function brand(page, font, logo) {
   drawText(page, font, 'Consulteam', 94, 37, 18, '#ffffff', 300);
 }
 
+function footer(page, font, number) {
+  rectangle(page, 45, 796, 505, 0.7, '#d5dfed');
+  drawText(page, font, 'Consulteam  |  consulteam.edu.kg', 45, 807, 8.5, MUTED);
+  drawText(page, font, `${number} / 2`, 515, 807, 8.5, MUTED, 35);
+}
+
 function drawCertificate(page, font, logo, report, t) {
   rectangle(page, 0, 0, PAGE_WIDTH, PAGE_HEIGHT, '#ffffff');
   rectangle(page, 0, 0, PAGE_WIDTH, 211, BLUE);
@@ -128,9 +147,34 @@ function drawCertificate(page, font, logo, report, t) {
     });
   });
   drawText(page, font, t.disclaimer, 45, 762, 8, MUTED, 505, 10);
-  rectangle(page, 45, 796, 505, 0.7, '#d5dfed');
-  drawText(page, font, 'Consulteam  |  consulteam.edu.kg', 45, 807, 8.5, MUTED);
-  drawText(page, font, '1 / 1', 515, 807, 8.5, MUTED, 35);
+  footer(page, font, 1);
+}
+
+function drawPracticePage(page, font, logo, report, t) {
+  rectangle(page, 0, 0, PAGE_WIDTH, PAGE_HEIGHT, '#ffffff');
+  rectangle(page, 0, 0, PAGE_WIDTH, 165, NAVY);
+  brand(page, font, logo);
+  drawText(page, font, 'RIASEC  /  02', 45, 88, 10, LIME);
+  drawFitted(page, font, t.trialTitle, 45, 107, 505, 2, 28, 21, '#ffffff');
+  drawText(page, font, t.trialIntro, 45, 178, 11, MUTED, 505, 15);
+
+  careerExperiments(report.topTypes, report.lang).forEach(({ type, name, task }, index) => {
+    const x = index % 2 === 0 ? 45 : 306;
+    const top = 226 + Math.floor(index / 2) * 161;
+    rectangle(page, x, top, 244, 151, PALE);
+    rectangle(page, x, top, 244, 4, typePalette[type]);
+    drawFitted(page, font, `${type}  ${name}`, x + 13, top + 14, 218, 2, 15, 11, NAVY);
+    drawText(page, font, t.trialAction, x + 13, top + 53, 8, BLUE, 218);
+    drawFitted(page, font, task, x + 13, top + 70, 218, 6, 10, 8.5);
+  });
+
+  rectangle(page, 45, 714, 505, 72, NAVY);
+  drawText(page, font, t.reflection, 57, 722, 11, '#ffffff', 480);
+  t.reflectionQuestions.forEach((question, index) => {
+    const x = 57 + index * 163;
+    drawFitted(page, font, question, x, 745, 150, 2, 9.5, 8, '#ffffff');
+  });
+  footer(page, font, 2);
 }
 
 export async function createCertificatePdf({ submission, scores, answers, lang = 'ru', fontBytes, logoBytes }) {
@@ -159,8 +203,9 @@ export async function createCertificatePdf({ submission, scores, answers, lang =
   const t = labels[language];
   doc.setTitle(`${t.certificate} - Consulteam - ${student.full_name}`);
   doc.setAuthor('Consulteam');
-  doc.setSubject('RIASEC career orientation result and careers to explore');
+  doc.setSubject('RIASEC career orientation result and practical career trials');
   drawCertificate(doc.addPage([PAGE_WIDTH, PAGE_HEIGHT]), font, logo, report, t);
+  drawPracticePage(doc.addPage([PAGE_WIDTH, PAGE_HEIGHT]), font, logo, report, t);
   return doc.save();
 }
 
