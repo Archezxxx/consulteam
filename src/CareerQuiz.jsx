@@ -1,10 +1,41 @@
 import { useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { TYPE_ORDER, questions, riasec, typePalette } from './content';
-import StudyRecommendations from './StudyRecommendations';
-import CareerExperiments from './CareerExperiments';
 
 const emptyScores = () => TYPE_ORDER.reduce((acc, type) => ({ ...acc, [type]: 0 }), {});
+
+const compactResultCopy = {
+  ru: {
+    file: 'В PDF — подробный профиль, профессии, задания для проверки себя, страны, университеты и все твои ответы.',
+    download: 'Скачать результаты PDF',
+    saving: 'Сохраняем результат…',
+    saved: 'Результат передан консультанту.',
+    saveError: 'Результат не сохранился. Попробуй ещё раз.',
+    pdfError: 'Не удалось скачать PDF. Попробуй ещё раз.',
+    retry: 'Повторить',
+    preparing: 'Готовим PDF…',
+  },
+  ky: {
+    file: 'PDF ичинде толук профилиң, кесиптер, өзүңдү сынай турган тапшырмалар, өлкөлөр, университеттер жана бардык жоопторуң бар.',
+    download: 'Жыйынтыкты PDF жүктөө',
+    saving: 'Жыйынтык сакталууда…',
+    saved: 'Жыйынтык кеңешчиге жөнөтүлдү.',
+    saveError: 'Жыйынтык сакталган жок. Кайра аракет кыл.',
+    pdfError: 'PDF жүктөлгөн жок. Кайра аракет кыл.',
+    retry: 'Кайталоо',
+    preparing: 'PDF даярдалууда…',
+  },
+  en: {
+    file: 'The PDF has your full profile, careers, practical trials, countries, universities and every answer you gave.',
+    download: 'Download results PDF',
+    saving: 'Saving your result…',
+    saved: 'Your result was sent to an adviser.',
+    saveError: 'The result could not be saved. Try again.',
+    pdfError: 'Could not download the PDF. Try again.',
+    retry: 'Retry',
+    preparing: 'Preparing PDF…',
+  },
+};
 
 function ArrowIcon({ direction = 'right' }) {
   const rotation = direction === 'left' ? 'rotate(180 12 12)' : undefined;
@@ -24,6 +55,7 @@ export default function CareerQuiz({ lang, copy, submission, onComplete }) {
   const [downloadState, setDownloadState] = useState('idle');
   const quizRef = useRef(null);
   const t = copy.quiz;
+  const resultCopy = compactResultCopy[lang] || compactResultCopy.ru;
   const profiles = riasec[lang];
 
   const scores = useMemo(() => {
@@ -43,8 +75,15 @@ export default function CareerQuiz({ lang, copy, submission, onComplete }) {
     [scores],
   );
 
-  const scrollToQuiz = () => {
-    requestAnimationFrame(() => quizRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }));
+  const scrollToQuiz = (block = 'center') => {
+    requestAnimationFrame(() => {
+      if (!quizRef.current) return;
+      if (block === 'start') {
+        window.scrollTo({ top: window.scrollY + quizRef.current.getBoundingClientRect().top, behavior: 'smooth' });
+      } else {
+        quizRef.current.scrollIntoView({ behavior: 'smooth', block });
+      }
+    });
   };
 
   const start = () => {
@@ -70,7 +109,7 @@ export default function CareerQuiz({ lang, copy, submission, onComplete }) {
       Promise.resolve(onComplete?.(scores))
         .then(() => setSaveState('saved'))
         .catch(() => setSaveState('error'));
-      scrollToQuiz();
+      scrollToQuiz('start');
       return;
     }
     setCurrent((value) => value + 1);
@@ -107,20 +146,16 @@ export default function CareerQuiz({ lang, copy, submission, onComplete }) {
     }
   };
 
-  const total = Object.values(scores).reduce((sum, value) => sum + value, 0) || 1;
   const topThree = ranking.slice(0, 3);
   const hollandCode = topThree.map(({ type }) => type).join('');
   const isMixed = topThree[0]?.score - topThree[1]?.score <= 2;
-  const whatsappText = `${t.whatsappIntro}\n${t.resultTitle}: ${hollandCode}\n${topThree.map(({ type, score }) => `${type} — ${profiles[type].name}: ${score}`).join('\n')}\n\n${lang === 'ky' ? 'Жыйынтыкты жана окуу багыттарын кеңешчи менен талкуулагым келет.' : lang === 'ru' ? 'Хочу обсудить результат и подходящие направления с консультантом.' : 'I would like to discuss my result and suitable study directions with an adviser.'}`;
-  const whatsappHref = `https://wa.me/996709694959?text=${encodeURIComponent(whatsappText)}`;
-
   return (
-    <section id="quiz" className="quiz-section chapter chapter--blue" ref={quizRef} aria-labelledby="quiz-title" data-ui>
+    <section id="quiz" className={`quiz-section chapter chapter--blue${screen === 'result' ? ' quiz-section--result' : ''}`} ref={quizRef} aria-labelledby="quiz-title" data-ui>
       <div className="shell">
-        <div className="quiz-heading">
+        {screen !== 'result' && <div className="quiz-heading">
           <h2 id="quiz-title">{t.title}</h2>
           <p>{t.intro}</p>
-        </div>
+        </div>}
 
         <div className={`quiz-shell quiz-shell--${screen}`}>
           <AnimatePresence mode="wait">
@@ -191,111 +226,38 @@ export default function CareerQuiz({ lang, copy, submission, onComplete }) {
             )}
 
             {screen === 'result' && (
-              <motion.div key="quiz-result" className="result-view" initial={{ opacity: 0, y: 22 }} animate={{ opacity: 1, y: 0 }}>
-                <div className="result-hero">
-                  <div>
-                    <p className="result-label">{t.resultTitle}</p>
-                    <h3 className="holland-code" aria-label={`${t.resultTitle}: ${hollandCode}`}>{hollandCode}</h3>
-                    <p className="result-explanation">{isMixed ? t.mixed : t.clear}</p>
+              <div key="quiz-result" className="result-compact">
+                <div className="result-compact-main">
+                  <div className="result-compact-profile">
+                    <p className="result-compact-eyebrow" id="quiz-title">{t.resultEyebrow} <span>15 / 15</span></p>
+                    <h3 className="result-compact-code" aria-label={`${t.resultTitle}: ${hollandCode}`}>{hollandCode}</h3>
+                    <p className="result-compact-lead">{profiles[topThree[0].type].name} · {profiles[topThree[0].type].oneLine}</p>
+                    <p className="result-compact-explanation">{isMixed ? t.mixed : t.clear}</p>
                   </div>
-                  <div className="code-stack" aria-hidden="true">
-                    {topThree.map(({ type }, index) => (
-                      <div key={type} style={{ '--type-color': typePalette[type], '--stack-index': index }}><strong>{type}</strong><span>{profiles[type].name}</span></div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="result-body">
-                  <div className="result-download">
-                    <div>
-                      <strong>{lang === 'ky' ? 'Жеке жыйынтыгың даяр' : lang === 'ru' ? 'Твой персональный результат готов' : 'Your personal result is ready'}</strong>
-                      <p>{lang === 'ky' ? 'Көп беттүү PDF ичинде кызыгуу профилиң, кесиптерди сынай турган тапшырмалар, өлкөлөр, университеттер, окуу багыттары жана 15 суроого берген жоопторуң бар.' : lang === 'ru' ? 'В PDF — твой профиль, задания для проверки профессий, страны, университеты, подходящие направления и твои ответы на все 15 вопросов.' : 'The PDF includes your profile, career trials, countries, universities, relevant study fields and your answers to all 15 questions.'}</p>
-                      <small>{lang === 'ky' ? 'Окуу жана жашоо чыгымдары болжолдуу; актуалдуу шарттарды кеңешчи менен такта.' : lang === 'ru' ? 'Стоимость обучения и жизни указана ориентировочно; актуальные условия уточни с консультантом.' : 'Tuition and living costs are estimates; confirm current terms with an adviser.'}</small>
-                    </div>
-                    <button type="button" className="button button--blue" onClick={downloadCertificate} disabled={downloadState === 'generating'}>{downloadState === 'generating' ? (lang === 'ky' ? 'Даярдалууда…' : lang === 'ru' ? 'Готовим PDF…' : 'Preparing PDF…') : t.print}</button>
-                  </div>
-                  {downloadState === 'error' && <p className="result-save-note result-save-note--error" role="alert">{lang === 'ky' ? 'PDF жүктөлгөн жок. Кайра аракет кылыңыз.' : lang === 'ru' ? 'Не удалось скачать PDF. Попробуйте ещё раз.' : 'Could not download the PDF. Please try again.'}</p>}
-                  <section className="score-section" aria-labelledby="score-heading">
-                    <div className="result-section-heading">
-                      <h4 id="score-heading">{t.chartTitle}</h4>
-                    </div>
-                    <div className="score-list">
-                      {ranking.map(({ type, score }) => {
-                        const percent = Math.round((score / total) * 100);
-                        return (
-                          <div className="score-row" key={type}>
-                            <div className="score-name"><span style={{ background: typePalette[type] }}>{type}</span><strong>{profiles[type].name}</strong></div>
-                            <div className="score-bar"><motion.span initial={{ width: 0 }} animate={{ width: `${Math.max(percent, 3)}%` }} transition={{ duration: 0.65 }} style={{ background: typePalette[type] }} /></div>
-                            <span className="score-percent">{percent}%</span>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </section>
-
-                  <section className="top-types" aria-labelledby="top-heading">
-                    <div className="result-section-heading">
-                      <h4 id="top-heading">{t.topTitle}</h4>
-                    </div>
-                    <div className="top-type-grid">
+                  <div className="result-compact-types">
+                    <h4>{t.topTitle}</h4>
+                    <ol>
                       {topThree.map(({ type }, index) => (
-                        <article className="top-type" key={type} style={{ '--type-color': typePalette[type] }}>
-                          <div className="top-type-head"><span>{index + 1}</span><strong>{type}</strong></div>
-                          <h5>{profiles[type].name}</h5>
-                          <p className="type-one-line">{profiles[type].oneLine}</p>
-                          <p>{profiles[type].summary}</p>
-                          <ul>{profiles[type].strengths.slice(0, 3).map((item) => <li key={item}>{item}</li>)}</ul>
-                        </article>
+                        <li key={type}>
+                          <span className="result-compact-rank">{String(index + 1).padStart(2, '0')}</span>
+                          <span className="result-compact-letter" style={{ background: typePalette[type] }}>{type}</span>
+                          <span>{profiles[type].name}</span>
+                        </li>
                       ))}
-                    </div>
-                  </section>
-
-                  <section className="detail-section" aria-labelledby="detail-heading">
-                    <div className="result-section-heading">
-                      <h4 id="detail-heading">{profiles[topThree[0].type].name}: {profiles[topThree[0].type].oneLine}</h4>
-                    </div>
-                    <div className="detail-grid">
-                      <article className="detail-block detail-block--wide">
-                        <h5>{t.strengths}</h5>
-                        <div className="tag-list">{profiles[topThree[0].type].strengths.map((item) => <span key={item}>{item}</span>)}</div>
-                      </article>
-                      <article className="detail-block">
-                        <h5>{t.environments}</h5>
-                        <ul>{profiles[topThree[0].type].environments.map((item) => <li key={item}>{item}</li>)}</ul>
-                      </article>
-                      <article className="detail-block">
-                        <h5>{t.careers}</h5>
-                        <ul className="career-list">{profiles[topThree[0].type].careers.map((item) => <li key={item}>{item}</li>)}</ul>
-                      </article>
-                      <article className="detail-block detail-block--wide detail-block--muted">
-                        <h5>{t.watch}</h5>
-                        <p>{profiles[topThree[0].type].watch}</p>
-                      </article>
-                      <article className="detail-block">
-                        <h5>{t.school}</h5>
-                        <ul>{profiles[topThree[0].type].school.map((item) => <li key={item}>{item}</li>)}</ul>
-                      </article>
-                      <article className="detail-block detail-block--accent">
-                        <h5>{t.nextSteps}</h5>
-                        <ol>{profiles[topThree[0].type].steps.map((item) => <li key={item}>{item}</li>)}</ol>
-                      </article>
-                    </div>
-                  </section>
-
-                  <CareerExperiments lang={lang} topTypes={topThree.map(({ type }) => type)} />
-                  <StudyRecommendations lang={lang} topTypes={topThree.map(({ type }) => type)} />
-
-                  <p className="quiz-disclaimer">{t.disclaimer}</p>
-                  {saveState === 'saving' && <p className="result-save-note" role="status">{lang === 'ky' ? 'Жыйынтык сакталууда…' : lang === 'ru' ? 'Сохраняем результат…' : 'Saving your result…'}</p>}
-                  {saveState === 'saved' && <p className="result-save-note" role="status">{lang === 'ky' ? 'Жыйынтык кеңешчиге жөнөтүлдү.' : lang === 'ru' ? 'Результат передан консультанту.' : 'Your result was sent to an adviser.'}</p>}
-                  {saveState === 'error' && <p className="result-save-note result-save-note--error" role="alert">{lang === 'ky' ? 'Жыйынтык сакталган жок. Кайра аракет кыл.' : lang === 'ru' ? 'Результат не сохранился. Попробуй ещё раз.' : 'The result could not be saved. Try again.'} <button type="button" onClick={() => { setSaveState('saving'); Promise.resolve(onComplete?.(scores)).then(() => setSaveState('saved')).catch(() => setSaveState('error')); }}>{lang === 'ky' ? 'Кайталоо' : lang === 'ru' ? 'Повторить' : 'Retry'}</button></p>}
-                  <div className="result-actions">
-                    <button type="button" className="text-button" onClick={restart}>{t.retake}</button>
-                    <button type="button" className="button button--outline" onClick={downloadCertificate} disabled={downloadState === 'generating'}>{downloadState === 'generating' ? (lang === 'ky' ? 'Даярдалууда…' : lang === 'ru' ? 'Готовим PDF…' : 'Preparing PDF…') : t.print}</button>
-                    <a className="button button--blue" href={whatsappHref} target="_blank" rel="noreferrer">{t.consult}<ArrowIcon /></a>
+                    </ol>
                   </div>
                 </div>
-              </motion.div>
+                <div className="result-compact-footer">
+                  <div className="result-compact-file">
+                    <p>{resultCopy.file}</p>
+                    {saveState === 'saving' && <small role="status">{resultCopy.saving}</small>}
+                    {saveState === 'saved' && <small role="status">{resultCopy.saved}</small>}
+                    {saveState === 'error' && <small className="result-compact-error" role="alert">{resultCopy.saveError} <button type="button" onClick={() => { setSaveState('saving'); Promise.resolve(onComplete?.(scores)).then(() => setSaveState('saved')).catch(() => setSaveState('error')); }}>{resultCopy.retry}</button></small>}
+                    {downloadState === 'error' && <small className="result-compact-error" role="alert">{resultCopy.pdfError}</small>}
+                  </div>
+                  <button type="button" className="button button--blue" onClick={downloadCertificate} disabled={downloadState === 'generating'}>{downloadState === 'generating' ? resultCopy.preparing : resultCopy.download}<ArrowIcon /></button>
+                </div>
+              </div>
             )}
           </AnimatePresence>
         </div>
